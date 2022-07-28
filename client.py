@@ -33,15 +33,17 @@ def scroll_up():
     pyautogui.press('pageup')
 
 
-def click(x, y, clicks=1, interval=0.0):
+def click(x, y, clicks=1, interval=0.0,duration=0.33,move_to_original_position=False):
     original_pos = pyautogui.position()
     loops = 0
+    pyautogui.moveTo(x,y,duration=duration)
     while loops < clicks:
         check_quit_key_press()
         pyautogui.click(x=x, y=y)
-        pyautogui.moveTo(original_pos[0], original_pos[1])
         loops = loops + 1
         time.sleep(interval)
+    if move_to_original_position:
+            pyautogui.moveTo(original_pos[0], original_pos[1])
 
 
 def check_quit_key_press():
@@ -309,9 +311,12 @@ def get_to_followers_page(logger):
     
     color=[255,150,50]
     coords_list=find_all_pixels(region,color)
-    coord=coords_list[0]
+    if (coords_list is None)or(coords_list == []):
+        return "coord_not_found"
+    else:
+        coord=coords_list[0]
+        click(coord[0],coord[1],clicks=1)
     
-    click(coord[0],coord[1],clicks=1)
     
 
 def find_followers_button_on_profile_to_follow_from():
@@ -370,7 +375,7 @@ def check_if_coord_in_coord_list(coord,coord_list):
     return False
 
 
-def find_random_account_from_followers_list(logger):
+def find_random_account_from_followers_list(logger,users_ive_followed_from_database):
     #method starts on follower list page and ends on the profile of a random guy
     #randomly scroll
     logger.log("Randomly scrolling.")
@@ -385,22 +390,19 @@ def find_random_account_from_followers_list(logger):
 
     #click account
     logger.log("Clicking chosen random account.")
-    x_coord=random.randint(187,571)
+    x_coord=187
     y_coord=random.randint(175,1167)
     coord=[x_coord,y_coord]
     click(coord[0],coord[1])
     check_quit_key_press()
     
-    #open list of users ive already spammed
-    logger.log("Checking if this account has been targetted before.")
-    dir=r"C:\Users\Matt\Desktop\1\my Programs\twitter bot\config\users_ive_followed_from.txt"
-    file=open(dir)
-    
+    #check if account has been targetted
     #get name of current guy
+    logger.log("Checking if this account has been targetted before.")
     name=get_name_of_current_profile()
     
     #check if name in file
-    if check_if_name_is_in_file(name,file):
+    if users_ive_followed_from_database.check_if_user_in_users_followed_database(name):
         logger.log("This account has been targetted before. Redoing search algorithm.")
         #if name is found, we need a new name
         #return to list of followers
@@ -412,15 +414,12 @@ def find_random_account_from_followers_list(logger):
         check_quit_key_press()
         
         #call this method again
-        find_random_account_from_followers_list(logger)
+        find_random_account_from_followers_list(logger,users_ive_followed_from_database)
     else:
         #if the name isnt in the file, add this name to the file, then return.
         logger.log("Verified that the chosen account is unique. Writing this username to the database.")
-        dir=r"C:\Users\Matt\Desktop\1\my Programs\twitter bot\config\users_ive_followed_from.txt"
-        file=open(dir,'a')
-        name=f"\n{name}"
-        file.writelines(name)
-
+        users_ive_followed_from_database.add_username_to_database(name)
+        
     
 def check_if_name_is_in_file(name,file):
     Lines=file.readlines()

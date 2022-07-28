@@ -26,8 +26,6 @@ def create_config_file():
     if not exists(config_file):
         with open(config_file, "w") as f:
             default_config = {
-                
-                
                 "launcher_path": join(expandvars(f"%appdata%"), "Microsoft", "Windows", "Start Menu", "Programs", "Chrome Apps", "Twitter.lnk")} # twitter launcher path
             f.write(json.dumps(default_config, indent=4))
 

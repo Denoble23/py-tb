@@ -7,10 +7,13 @@ import pyautogui
 
 from client import check_quit_key_press, click, click_list_of_follow_buttons, find_random_account_from_followers_list, get_coords_of_follow_buttons, get_name_of_current_profile, get_to_followers_page, get_to_following_page, get_to_notification_page, get_to_profile_page, look_for_unfollow_button_in_unfollow_page, orientate_twitter_window, restart_twitter, screenshot, search_region_for_pixel, use_webpage_search
 from configuration import load_user_settings
+from database import Database
 from image_rec import check_for_location, find_references, pixel_is_equal
 from logger import Logger
 
 logger = Logger()
+users_ive_followed_from_database= Database("users_ive_followed_from")
+
 
 
 def detect_screen():
@@ -94,6 +97,7 @@ def main():
     # intro
     user_settings = load_user_settings()
     launcher_path = user_settings["launcher_path"]
+    
 
     logger.log("Twitter follow bot")
     restart_twitter(logger, launcher_path)
@@ -164,18 +168,20 @@ def main():
             time.sleep(3)
 
             # get a account to spam follow
-            find_random_account_from_followers_list(logger)
+            find_random_account_from_followers_list(logger,users_ive_followed_from_database)
 
             # get to their followers page
-            get_to_followers_page(logger)
-            time.sleep(4)
+            if get_to_followers_page(logger) != "coord_not_found":
+                time.sleep(4)
 
-            # get coords of follow buttons
-            follow_button_list = get_coords_of_follow_buttons(logger)
+                # get coords of follow buttons
+                follow_button_list = get_coords_of_follow_buttons(logger)
 
-            # click that set of coords
-            click_list_of_follow_buttons(follow_button_list, logger)
-            time.sleep(3)
+                # click that set of coords
+                click_list_of_follow_buttons(follow_button_list, logger)
+                time.sleep(3)
+            else:
+                logger.log("Had trouble locating the followers button on this profile. Skipping this profile.")
 
 
 if __name__ == "__main__":
