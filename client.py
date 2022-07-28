@@ -91,7 +91,7 @@ def orientate_twitter_window(logger):
     time.sleep(1)
 
 
-def restart_twitter(logger):
+def restart_twitter(logger, launcher_path):
     #if twitter is open, close it.
     windows = pygetwindow.getAllTitles()
     index=len(windows)-1
@@ -106,7 +106,8 @@ def restart_twitter(logger):
 
     #open twitter
     logger.log("Opening Twitter.")
-    os.startfile(r"C:\Users\Matt\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Chrome Apps\Twitter.lnk")
+    
+    os.startfile(launcher_path)
     time.sleep(5)
     
     #orientate twitter
