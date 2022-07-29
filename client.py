@@ -10,7 +10,7 @@ import pygetwindow
 import os
 import pyperclip
 
-from image_rec import check_for_location, coords_is_equal, find_references, get_first_location, pixel_is_equal
+from image_rec import check_for_location, coords_is_equal, find_references, pixel_is_equal
 
 
 def scroll_down():
@@ -52,7 +52,7 @@ def check_quit_key_press():
         sys.exit()
     if keyboard.is_pressed("pause"):
         print("Pausing program until pause is held again")
-        time.sleep(2)
+        time.sleep(5)
         pressed=False
         while not(pressed):
             time.sleep(0.05)
@@ -123,27 +123,35 @@ def get_to_profile_page(logger):
     logger.log('Clicking profile page')
     click(98,472,clicks=3,interval=0.2)
     time.sleep(2)
+    if not(check_if_on_profile_page()):
+        return "restart"
+    
+    
+def check_if_on_profile_page():
+    use_webpage_search('edit profile')
+    region=[609,290,100,45]
+    color=[255,150,50]
+    coords_list=find_all_pixels(region,color)
+    if (coords_list is not None)and(coords_list != []):
+        return True
+    return False
     
     
 def get_to_following_page(logger):
-    #check if on profile page
-    logger.log("Checking if we're on the profile page.")
-    if not(check_if_on_twitter_main()):
-        logger.log("We're not somewhere on the profile page.")
-        return
+    logger.log("Getting to this profile's following page")
+    check_quit_key_press()
+    use_webpage_search("following")
+    
+    region=[191,483,71,33]
+    color=[255,150,50]
+    coords_list=find_all_pixels(region,color)
+   
+    if (coords_list is None)or(coords_list == []):
+        return "restart"
     else:
-        logger.log("We're somewhere on the profile page.")
+        coord=coords_list[0]
+        click(coord[0],coord[1],clicks=1)
     
-    #if we're on profile page click following logo
-    following_button_location=find_following_button()
-    logger.log(f"Location of following button is {following_button_location}")
-    if following_button_location is None:
-        logger.log("Couldn't find find the following button.")
-        return
-    logger.log(f"Clicking following button.")
-    click(following_button_location[0],following_button_location[1])
-    
- 
 def check_if_on_twitter_main():
     references = [
         "1.png",
@@ -307,12 +315,13 @@ def get_to_followers_page(logger):
     logger.log("Getting to this profile's followers page")
     check_quit_key_press()
     use_webpage_search("Followers")
-    region=[154,421,311,200]
     
+    region=[154,421,311,200]
     color=[255,150,50]
     coords_list=find_all_pixels(region,color)
+   
     if (coords_list is None)or(coords_list == []):
-        return "coord_not_found"
+        return "restart"
     else:
         coord=coords_list[0]
         click(coord[0],coord[1],clicks=1)
@@ -383,9 +392,9 @@ def find_random_account_from_followers_list(logger,users_ive_followed_from_datab
     while scrolls>0:
         logger.log("Scrolling")
         click(1183,1151)
-        time.sleep(0.2)
+        time.sleep(0.05)
         if random.randint(1,6)==3:
-            time.sleep(3)
+            time.sleep(1)
         scrolls-=1
 
     #click account
@@ -472,7 +481,7 @@ def click_list_of_follow_buttons(follow_button_list,logger):
     while index<length:
         check_quit_key_press()
         current_coord=follow_button_list[index]
-        if not(random.randint(1,3)==1):
+        if random . randint(1, 3) != 1:
             click(current_coord[0],current_coord[1])
             logger.add_follow()
         time.sleep(0.2)
@@ -480,7 +489,33 @@ def click_list_of_follow_buttons(follow_button_list,logger):
         index+=1
         
 
-
+def unfollow_from_following_page(logger):
+    check_quit_key_press()
+    has_more_to_unfollow=True
+    while has_more_to_unfollow:
+        #find coord of unfollow
+        following_button_coords = look_for_unfollow_button_in_unfollow_page(logger)
+        
+        #unfollow if given a coord
+        if following_button_coords is not None:
+            check_quit_key_press()
+            #click unfollow button
+            click(following_button_coords[0],following_button_coords[1])
+            time.sleep(0.33)
+            #click unfollow button in resulting popup
+            click(600, 660)
+            time.sleep(0.33)
+        else:
+            check_quit_key_press()
+            pyautogui.press('f5')
+            time.sleep(2.5)
+        
+        #check if has_more_to_unfollow
+        check_quit_key_press()
+        if look_for_unfollow_button_in_unfollow_page(logger) is None:
+            has_more_to_unfollow=False
+        
+    
 
     
         

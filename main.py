@@ -13,100 +13,14 @@ from logger import Logger
 
 logger = Logger()
 users_ive_followed_from_database= Database("users_ive_followed_from")
-
-
-
-def detect_screen():
-    orientate_twitter_window(logger)
-
-
-def check_if_on_profile_page():
-    check_quit_key_press()
-    current_image = screenshot()
-    reference_folder = "profile_page"
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png",
-
-    ]
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.97
-    )
-    return check_for_location(locations)
-
-
-def check_if_somewhere_on_twitter_main():
-    check_quit_key_press()
-    current_image = screenshot()
-    reference_folder = "somewhere_on_twitter_main"
-    references = [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png",
-
-    ]
-    locations = find_references(
-        screenshot=current_image,
-        folder=reference_folder,
-        names=references,
-        tolerance=0.97
-    )
-    return check_for_location(locations)
-
-
-def check_if_on_following_page():
-    on_main = check_if_somewhere_on_twitter_main()
-    if not on_main:
-        return False
-
-    # get a screenshot of region
-    region = [654, 121, 35, 20]
-    iar = numpy.asarray(screenshot(region=region))
-
-    # define positive pix
-    sentinel = [54, 253, 255]
-    sentinel2 = [29, 155, 240]
-
-    # loop through every pix
-    x_index = 34
-    while x_index > -1:
-        y_index = 19
-        while y_index > -1:
-            current_pix = iar[y_index][x_index]
-            # if one of the pixels are positive return true
-
-            if (pixel_is_equal(current_pix, sentinel, tol=15)) or (pixel_is_equal(current_pix, sentinel2, tol=15)):
-                return True
-
-            y_index = y_index-1
-        x_index = x_index-1
-
-    # if we find no positive pixels return false
-    return False
-
+user_settings = load_user_settings()
+launcher_path = user_settings["launcher_path"]
+mode=0
+state=""
 
 def main():
     # intro
-    user_settings = load_user_settings()
-    launcher_path = user_settings["launcher_path"]
     
-
-    logger.log("Twitter follow bot")
-    restart_twitter(logger, launcher_path)
-    logger.log("Select mode")
-
-    # mode select
-    value = input("Select mode: \n [1]unfollow all mode \n [2]follow mode \n")
-    value = int(value)
-    logger.log(value)
 
     # unfollow mode
     if value == 1:
@@ -182,6 +96,46 @@ def main():
                 time.sleep(3)
             else:
                 logger.log("Had trouble locating the followers button on this profile. Skipping this profile.")
+
+
+def main_loops():
+    if state=="restart":
+        state_restart()
+    if state=="intro":
+        pass
+    if state=="unfollow_mode":
+        pass
+    if state=="follow_mode":
+        pass
+    
+        
+
+def state_restart():
+    restart_twitter(restart_twitter(logger, launcher_path))
+    if mode ==0:
+        return "intro"
+    if mode ==1:
+        return "unfollow_mode"
+    if mode ==2:
+        return "follow_mode"
+    
+
+def state_intro():
+    logger.log("Select mode")
+
+    # mode select
+    value = input("Select mode: \n [1]unfollow all mode \n [2]follow mode \n")
+    value = int(value)
+    logger.log(value)
+
+def state_unfollow_mode():
+    pass
+
+def state_follow_mode():
+    pass
+
+
+
 
 
 if __name__ == "__main__":

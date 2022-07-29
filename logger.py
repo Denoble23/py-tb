@@ -14,6 +14,7 @@ class Logger:
         self.fights = 0
         self.unfollows = 0
         self.follows = 0
+        self.restarts = 0
 
     def make_timestamp(self):
         """creates a time stamp for log output
@@ -63,7 +64,7 @@ class Logger:
         Args:
             message (str): message to add
         """
-        print(f"{self.make_timestamp()}||{self.unfollows} unfollows ||{self.follows} follows: {message}")
+        print(f"{self.make_timestamp()}||{self.unfollows} unfollows ||{self.follows} follows||{self.restarts} restarts: {message}")
 
     def add_win(self):
         """add win to log
@@ -89,3 +90,9 @@ class Logger:
         """add unfollow tally to log
         """
         self.follows += 1
+
+    def add_restart(self):
+        """add restart to log
+        """
+        self.restarts += 1
+
