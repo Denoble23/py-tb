@@ -91,6 +91,11 @@ class Logger:
         """
         self.follows += 1
 
+    def remove_follow(self):
+        """add unfollow tally to log
+        """
+        self.follows -= 1
+
     def add_restart(self):
         """add restart to log
         """
