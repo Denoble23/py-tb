@@ -27,7 +27,7 @@ def scroll_down():
 
 def scroll_up():
     #click twitter window
-    pyautogui.click(137,888,clicks=3,interval=0.05)
+    pyautogui.click(20,888,clicks=3,interval=0.05)
     time.sleep(0.05)
     check_quit_key_press()
     
@@ -215,34 +215,6 @@ def find_following_button():
     return coord_list[0]
     
     
-def verify_following_button(coord):
-    #get screenshot of region around selected coord
-    region=[]
-    iar=numpy.asarray(screenshot(region))
-    
-    #vars to loop through entire iar
-    x_limit=999
-    y_limit=999
-    x_start=999
-    y_start=999
-    
-    #VARS to collect total amount of yellow pixels around
-    color_yellow=[255,255,0]
-    total_positive_pixels=0
-    
-    x_coord=x_start
-    while x_coord<x_limit:
-        y_coord=y_start
-        while y_coord<y_limit:
-        #for each pixel in iar
-            current_pix=iar[y_coord][x_coord]
-
-        
-        #increment
-            y_coord=y_coord+1
-        x_coord=x_coord+1
-
-
 def look_for_unfollow_button_in_unfollow_page():
     use_webpage_search('following')
     
@@ -272,19 +244,6 @@ def look_for_unfollow_button_in_unfollow_page():
         
     return None
         
-        
-def get_to_notification_page(logger):
-    #check if on profile page
-    logger.log("Checking if we're on the twitter main page.")
-    if not(check_if_on_twitter_main()):
-        logger.log("We're not somewhere on the twitter main page.")
-        return
-    else:
-        logger.log("We're somewhere on the twitter main page.")
-    
-    logger.log("Getting to notification page.")
-    click(110,215)
-    
 
 def use_webpage_search(search_string):
     #click twitter window
@@ -307,11 +266,7 @@ def use_webpage_search(search_string):
     pyautogui.typewrite(search_string,interval=0.01)
     check_quit_key_press()
     
-    
-def look_for_someone_followed_me_in_notifications():
-    use_webpage_search('followed you')
-    
-    
+     
 def search_region_for_pixel(region,color):
     #searches entire region for pixel and returns first coords it finds
     
@@ -394,16 +349,6 @@ def get_to_followers_page(logger):
         click(coord[0],coord[1],clicks=1)
     
 
-def find_followers_button_on_profile_to_follow_from():
-    #search for following
-    use_webpage_search('Following')
-    
-    #search for orange pixel
-    region=[252,275,550,70]
-    color=[255,150,50]
-    return search_region_for_pixel(region,color)
-    
-   
 def combine_duplicate_coords(coords_list,tol=50):
     #method will take an array of coords ([x,y]) and combine duplicates according to a certain tolerance.
     
@@ -482,10 +427,10 @@ def randomly_scroll_down(logger):
 
         if random.randint(1,2)==1:
             fast_scroll_down()
-            time.sleep(1)
+            time.sleep(0.33)
         else:
             scroll_down()
-            time.sleep(1)
+            time.sleep(0.33)
       
         
         scrolls=scrolls-1
@@ -554,21 +499,22 @@ def get_name_of_current_profile():
     
     
 def get_coords_of_follow_buttons(logger):
-    logger.log("Getting a list of the coords of the black follow buttons that appear on the webpage.")
-    check_quit_key_press()
+    #make iar
     iar=numpy.asarray(screenshot())
-    coords_list=[]
-    color_black=[15,20,25]
-    x_coord=650
-    y_coord=190
-    while y_coord<1050:
-        current_pix=iar[y_coord][x_coord]
-        current_coord=[x_coord,y_coord]
-        if pixel_is_equal(current_pix,color_black,tol=10):
-            coords_list.append(current_coord)
-        y_coord+=1
     
-    return combine_duplicate_coords(coords_list)
+    #search for follow
+    use_webpage_search('follow')
+    
+    #find all yellow coords in the vertical strip (686,226)->(686,1089)
+    color_yellow=[255,255,0]
+    
+    yellow_pix_list=[]
+    for y_coord in range(226,1089):
+        currentpix=iar[y_coord][686]
+        if pixel_is_equal(color_yellow,currentpix,tol=5):
+            yellow_pix_list.append([686,y_coord])
+       
+    return combine_duplicate_coords(yellow_pix_list) 
 
 
 def click_list_of_follow_buttons(follow_button_list,logger):
@@ -579,9 +525,11 @@ def click_list_of_follow_buttons(follow_button_list,logger):
         check_quit_key_press()
         current_coord=follow_button_list[index]
         if (random . randint(1, 3) != 1)or(len(follow_button_list)<5):
+            logger.log("Followed one.")
             click(current_coord[0],current_coord[1])
             logger.add_follow()
-        time.sleep(0.2)
+            click(20,900)
+        time.sleep(0.05)
         
         index+=1
     
@@ -632,6 +580,9 @@ def check_if_at_follow_cap():
     color_orange=[255,150,50]
     region=[395,1135,200,10]
     coords_list=find_all_pixels(region,color_orange,tolerance=10)
+    
+    scroll_up()
+    
     if (coords_list is None)or(coords_list ==[]):
         return False
     return True
@@ -664,36 +615,27 @@ def handle_restore_pages_notification(logger):
 
 
 def find_follow_buttons():
-    #clear webpage search fucntion; highlighting might get in the way.
-    use_webpage_search("t")
-    pyautogui.press('backspace')
+    check_quit_key_press()
     
-    #get black coords list
-    region=[643,400,79,700]
-    color_black=[15,20,25]
+    
+    #search for follow
+    use_webpage_search('follow')
+
+    
+    #make iar
+    iar=numpy.asarray(screenshot())
+    
+    
+    #find all yellow coords in the vertical strip (686,226)->(686,1089)
     color_yellow=[255,255,0]
+    yellow_pix_list=[]
     
-    coords_list_black=find_all_pixels(color=color_black,region=region)
-    use_webpage_search('Follow')
-    time.sleep(0.33)
-    coords_list_yellow=find_all_pixels(color=color_yellow,region=region)
-    
-    combined_coords_list_black=combine_duplicate_coords(coords_list_black,tol=100)
-    combined_coords_list_yellow=combine_duplicate_coords(coords_list_yellow,tol=100)
-    
-    
-    
-    return_coord_list=[]
-    for black_coord in combined_coords_list_black:
-    #for each black coord
-        for yellow_coord in combined_coords_list_yellow:
-        #loop through every yellow coord seeing if it has similar yellow coords.
-            if coords_is_equal(black_coord,yellow_coord,tol=50):
-                return_coord_list.append(black_coord)
-    
-    
-    
-    return return_coord_list
+    for y_coord in range(226,1089):
+        currentpix=iar[y_coord][686]
+        if pixel_is_equal(color_yellow,currentpix,tol=5):
+            yellow_pix_list.append([686,y_coord])
+
+    return combine_duplicate_coords(yellow_pix_list) 
     
     
     

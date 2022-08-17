@@ -5,7 +5,7 @@ import numpy
 import pyautogui
 
 
-from client import check_quit_key_press, click, click_list_of_follow_buttons, find_follow_buttons, find_following_button, find_random_account_from_followers_list, get_coords_of_follow_buttons, get_name_of_current_profile, get_to_followers_page, get_to_following_page, get_to_notification_page, get_to_profile_page, look_for_unfollow_button_in_unfollow_page, orientate_edge_window, restart_twitter, screenshot, scroll_down, search_region_for_pixel, use_webpage_search
+from client import check_quit_key_press, click, click_list_of_follow_buttons, find_follow_buttons, find_following_button, find_random_account_from_followers_list, get_coords_of_follow_buttons, get_name_of_current_profile, get_to_followers_page, get_to_following_page,  get_to_profile_page, look_for_unfollow_button_in_unfollow_page, orientate_edge_window, restart_twitter, screenshot, scroll_down, search_region_for_pixel, use_webpage_search
 from configuration import load_user_settings
 from database import Database
 from image_rec import check_for_location, find_references, pixel_is_equal
@@ -90,7 +90,7 @@ def state_unfollow_mode():
     # get to profile page
     if get_to_profile_page(logger)=="restart":
         return "restart"
-    time.sleep(1)
+    time.sleep(0.33)
 
     # get to following page
     if get_to_following_page(logger)=="restart":
@@ -132,7 +132,7 @@ def state_follow_mode():
         # get to profile page
         if get_to_profile_page(logger)=="restart":
             return "restart"
-        time.sleep(1)
+        time.sleep(0.33)
 
         # get to list of my followers
         if get_to_followers_page(logger)=="restart":
@@ -155,8 +155,7 @@ def state_follow_mode():
         
             #scroll for next loop
             scroll_down()
-            time.sleep(0.33)
-            
+
             # get coords of follow buttons
             follow_button_list = find_follow_buttons()
 
