@@ -105,6 +105,7 @@ def open_twitter_in_edge(logger):
     
     #type out twitter.com
     pyautogui.typewrite("twitter.com",interval=0.01)
+    time.sleep(1)
     pyautogui.press('enter')
     time.sleep(3)
 

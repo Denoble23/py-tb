@@ -30,7 +30,5 @@ launcher_path = user_settings["launcher_path"]
 
 
 
-
-
-
-print(find_follow_buttons())
+time.sleep(2)
+pyautogui.press('enter')

@@ -167,6 +167,5 @@ def state_follow_mode():
             logger.log("Had trouble locating the followers button on this profile. Skipping this profile.")
 
 
-
 if __name__ == "__main__":
     main()
