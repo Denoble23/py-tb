@@ -148,15 +148,17 @@ def restart_twitter(logger, launcher_path):
 def get_to_profile_page(logger):
     logger.log("Getting to profile page.")
     check_quit_key_press()
+    
     #click profile icon on the left side
     logger.log('Clicking profile page')
-    click(93,517,clicks=3,interval=0.2)
-    time.sleep(2)
-    on_profile= check_if_on_profile_page()
-    if not(on_profile):
-        return "restart"
+    
+    click(93,517)
+    time.sleep(1)
+    
     if not(check_if_on_profile_page()):
-        return "restart"
+        logger.log("Recalling get to profile page()")
+        get_to_profile_page(logger)
+    
     logger.log("Made it to profile page.")
     
     
@@ -248,7 +250,7 @@ def look_for_unfollow_button_in_unfollow_page():
 
 def use_webpage_search(search_string):
     #click twitter window
-    pyautogui.click(137,888,clicks=3,interval=0.05)
+    pyautogui.click(40,888,clicks=3,interval=0.05)
     time.sleep(0.05)
     check_quit_key_press()
     
@@ -399,7 +401,7 @@ def check_if_coord_in_coord_list(coord,coord_list,tol=50):
 def fast_scroll_down():
     #pixel vars
     color_grey=[193,193,193]
-    region=[1180,103,5,1050]
+    region=[1130,103,5,1050]
     
     #get grey coordslist
     coords_list=find_all_pixels(region,color_grey)
@@ -440,6 +442,7 @@ def randomly_scroll_down(logger):
 def find_random_account_from_followers_list(logger,users_ive_followed_from_database):
     #method starts on follower list page and ends on the profile of a random guy
     #randomly scroll
+    logger.log("Randomly scrolling.")
     randomly_scroll_down(logger)
 
     #click account

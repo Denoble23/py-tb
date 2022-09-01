@@ -6,7 +6,7 @@ import time
 from matplotlib import pyplot as plt
 import numpy
 import os
-from client import check_if_at_follow_cap, check_if_on_profile_page, combine_duplicate_coords, fast_scroll_down, find_all_pixels, find_follow_buttons, get_coords_of_follow_buttons, get_name_of_current_profile, get_to_followers_page, get_to_following_page, get_to_profile_page, orientate_edge_window, restart_twitter, screenshot, use_webpage_search
+from client import check_if_at_follow_cap, check_if_on_profile_page, combine_duplicate_coords, fast_scroll_down, find_all_pixels, find_follow_buttons, find_random_account_from_followers_list, get_coords_of_follow_buttons, get_name_of_current_profile, get_to_followers_page, get_to_following_page, get_to_profile_page, orientate_edge_window, restart_twitter, screenshot, use_webpage_search
 
 from configuration import load_user_settings
 import pyautogui
@@ -16,6 +16,7 @@ from image_rec import coords_is_equal, find_references, get_first_location, pixe
 from logger import Logger
 import subprocess
 from database import Database
+from main import state_follow_mode
 
 
 logger = Logger()
@@ -29,6 +30,3 @@ launcher_path = user_settings["launcher_path"]
 # plt.show()
 
 
-
-time.sleep(2)
-pyautogui.press('enter')
