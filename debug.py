@@ -6,7 +6,7 @@ import time
 from matplotlib import pyplot as plt
 import numpy
 import os
-from client import check_if_at_follow_cap, check_if_on_profile_page, combine_duplicate_coords, fast_scroll_down, find_all_pixels, find_follow_buttons, find_random_account_from_followers_list, get_coords_of_follow_buttons, get_name_of_current_profile, get_to_followers_page, get_to_following_page, get_to_profile_page, orientate_edge_window, restart_twitter, screenshot, use_webpage_search
+from client import check_for_restore_pages_notification, check_if_at_follow_cap, check_if_on_profile_page, combine_duplicate_coords, fast_scroll_down, find_all_pixels, find_follow_buttons, get_to_random_account_from_followers_list, get_coords_of_follow_buttons, get_name_of_current_profile, get_to_followers_page, get_to_following_page, get_to_profile_page, handle_edge_restore_notification, orientate_edge_window, restart_twitter, screenshot, scroll_down, use_webpage_search
 
 from configuration import load_user_settings
 import pyautogui
@@ -30,3 +30,6 @@ launcher_path = user_settings["launcher_path"]
 # plt.show()
 
 
+
+
+handle_edge_restore_notification(logger)

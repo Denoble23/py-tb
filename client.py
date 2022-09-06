@@ -17,7 +17,7 @@ from image_rec import check_for_location, coords_is_equal, find_references, pixe
 
 def scroll_down():
     #click twitter window
-    pyautogui.click(137,888,clicks=3,interval=0.05)
+    pyautogui.click(40,888,clicks=3,interval=0.05)
     time.sleep(0.05)
     check_quit_key_press()
     
@@ -94,7 +94,34 @@ def orientate_edge_window(logger):
     edge_window.resizeTo(1200, 1200) # set size to 100x100
     time.sleep(1)
     
-    handle_restore_pages_notification(logger)
+    handle_edge_restore_notification(logger)
+
+
+def check_for_restore_logo():
+    iar=numpy.asarray(screenshot())
+    pix_list=[]
+    pix_list.append(iar[156][1102])
+    pix_list.append(iar[172][1104])
+    pix_list.append(iar[175][1160])
+    pix_list.append(iar[158][1158])
+    
+    sentinel=[0,120,212]
+    for pix in pix_list:
+        if not(pixel_is_equal(pix,sentinel,tol=35)): return False
+    return True
+    
+    
+def handle_edge_restore_notification(logger):
+    if check_for_restore_logo():
+        logger.log("Handling edge's 'restore pages' notification.")
+        origin=pyautogui.position()
+        pyautogui.moveTo(1167,88,duration=0.33)
+        time.sleep(0.2)
+        pyautogui.click()
+        time.sleep(0.2)
+        pyautogui.moveTo(origin[0],origin[1],duration=0.33)
+    
+    
 
 
 def open_twitter_in_edge(logger):
@@ -108,6 +135,8 @@ def open_twitter_in_edge(logger):
     time.sleep(1)
     pyautogui.press('enter')
     time.sleep(3)
+    
+    handle_edge_restore_notification(logger)
 
 
 def restart_twitter(logger, launcher_path):
@@ -439,7 +468,7 @@ def randomly_scroll_down(logger):
         scrolls=scrolls-1
 
 
-def find_random_account_from_followers_list(logger,users_ive_followed_from_database):
+def get_to_random_account_from_followers_list(logger,users_ive_followed_from_database):
     #method starts on follower list page and ends on the profile of a random guy
     #randomly scroll
     logger.log("Randomly scrolling.")
@@ -471,7 +500,7 @@ def find_random_account_from_followers_list(logger,users_ive_followed_from_datab
         check_quit_key_press()
         
         #call this method again
-        find_random_account_from_followers_list(logger,users_ive_followed_from_database)
+        get_to_random_account_from_followers_list(logger,users_ive_followed_from_database)
     else:
         #if the name isnt in the file, add this name to the file, then return.
         logger.log("Verified that the chosen account is unique. Writing this username to the database.")
@@ -611,36 +640,27 @@ def check_for_restore_pages_notification():
 
 
 
-def handle_restore_pages_notification(logger):
-    if check_for_restore_pages_notification():
-        click(1117,115)
-        logger.log("Handled edge's restore pages notification")
-        time.sleep(0.33)
 
 
 def find_follow_buttons():
     check_quit_key_press()
     
-    
     #search for follow
     use_webpage_search('follow')
+    time.sleep(1)
 
-    
     #make iar
     iar=numpy.asarray(screenshot())
     
+    coord_list=[]
+    x_coord=662
+    sentinel=[255,255,0]
+    for y_coord in range(202,1120):
+        current_pixel=iar[y_coord][x_coord]
+        current_coord=[x_coord,y_coord]
+        if (y_coord % 10 == 0)and(pixel_is_equal(current_pixel,sentinel,tol=25)):
+            coord_list.append(current_coord)
     
-    #find all yellow coords in the vertical strip (686,226)->(686,1089)
-    color_yellow=[255,255,0]
-    yellow_pix_list=[]
-    
-    for y_coord in range(226,1089):
-        currentpix=iar[y_coord][686]
-        if pixel_is_equal(color_yellow,currentpix,tol=5):
-            yellow_pix_list.append([686,y_coord])
-
-    return combine_duplicate_coords(yellow_pix_list) 
-    
-    
+    return coord_list
     
     

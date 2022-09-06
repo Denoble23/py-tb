@@ -1,14 +1,17 @@
 
 import time
-from matplotlib import pyplot as plt
+
 import numpy
 import pyautogui
+from matplotlib import pyplot as plt
 
-
-from client import check_quit_key_press, click, click_list_of_follow_buttons, find_follow_buttons, find_following_button, find_random_account_from_followers_list, get_coords_of_follow_buttons, get_name_of_current_profile, get_to_followers_page, get_to_following_page,  get_to_profile_page, look_for_unfollow_button_in_unfollow_page, orientate_edge_window, restart_twitter, screenshot, scroll_down, search_region_for_pixel, use_webpage_search
+from client import (check_quit_key_press, click_list_of_follow_buttons,
+                    find_follow_buttons, find_following_button,
+                    get_to_followers_page, get_to_following_page,
+                    get_to_profile_page,
+                    get_to_random_account_from_followers_list, restart_twitter)
 from configuration import load_user_settings
 from database import Database
-from image_rec import check_for_location, find_references, pixel_is_equal
 from logger import Logger
 
 logger = Logger()
@@ -140,29 +143,17 @@ def state_follow_mode():
         time.sleep(1)
 
         # get a account to spam follow
-        find_random_account_from_followers_list(logger,users_ive_followed_from_database)
+        get_to_random_account_from_followers_list(logger,users_ive_followed_from_database)
         time.sleep(0.33)
 
         # get to their followers page
         if get_to_followers_page(logger) != "coord_not_found":
-            # get coords of follow buttons
-            follow_button_list = find_follow_buttons()
-
             # click that set of coords
+            follow_button_list = find_follow_buttons()
             if click_list_of_follow_buttons(follow_button_list, logger)=="throttled":
                 return "throttled"
             time.sleep(0.33)
         
-            #scroll for next loop
-            scroll_down()
-
-            # get coords of follow buttons
-            follow_button_list = find_follow_buttons()
-
-            # click that set of coords
-            if click_list_of_follow_buttons(follow_button_list, logger)=="throttled":
-                return "throttled"
-            time.sleep(0.33)
         else:
             logger.log("Had trouble locating the followers button on this profile. Skipping this profile.")
 
