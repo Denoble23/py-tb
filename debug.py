@@ -26,10 +26,8 @@ launcher_path = user_settings["launcher_path"]
 
 # orientate_edge_window(logger)
 
-# plt.imshow(numpy.asarray(screenshot(region=[0,0,1400,2000])))
-# plt.show()
+plt.imshow(numpy.asarray(screenshot(region=[0,0,1400,2000])))
+plt.show()
 
 
 
-
-handle_edge_restore_notification(logger)

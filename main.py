@@ -12,7 +12,7 @@ from client import (check_quit_key_press, click_list_of_follow_buttons,
                     find_follow_buttons, find_following_button,
                     get_to_followers_page, get_to_following_page,
                     get_to_profile_page,
-                    get_to_random_account_from_followers_list, restart_twitter)
+                    get_to_random_account_from_followers_list, orientate_terminal, restart_twitter)
 from configuration import load_user_settings
 from database import Database
 from logger import Logger
@@ -26,9 +26,11 @@ launcher_path = user_settings["launcher_path"]
 def main_gui():
     out_text=""
     out_text=out_text+"-Python Twitter bot - Matthew Miglio ~June 2022\n\n"
-    out_text=out_text+"-HOLDING SPACE TERMINATES THE PROGRAM\n\n"
-    out_text=out_text+"-Path to edge launcher is @ \AppData\Roaming\py-tb\config.json\n"
-    out_text=out_text+" Make sure the path is specified in the same format as the default example\n"
+    out_text=out_text+"-1. Holding space terminates the program, and holding pause pauses the program.\n\n"
+    out_text=out_text+"-2. Specify the location of your microsoft edge in the config file @ \AppData\Roaming\py-tb\config.json\n"
+    out_text=out_text+"     Make sure the path is specified in the same format as the default example!\n\n"
+    out_text=out_text+"-3. Select a mode:\n"
+    
     
     
     sg.theme('Material2')
@@ -97,10 +99,12 @@ def show_donate_gui():
 def show_help_gui():
     #help menu text
     out_text=""
-    out_text=out_text+"Twitter bot isnt really for anybody else.\nBasically all it does is follow people randomly."
-    out_text=out_text+"The bot finds people by looking at the followers of your followers. This has a high return rate on follow backs."
+    out_text=out_text+"Follow mode information:"
+    out_text=out_text+"     -The bot finds people by looking at the followers of your followers. This has a high return rate on follow backs."
+    out_text=out_text+"Unfollow mode information:"
+    out_text=out_text+"     -The bot unfollows every person that you follow (without discretion)"
     
-   
+    
     
     sg.theme('Material2')
     layout = [[sg.Text(out_text)],]
@@ -113,17 +117,28 @@ def show_help_gui():
 
 
 def follow_mode_main():
+    time.sleep(3)
+    orientate_terminal()
     state_restart()
+    state_loops=0
     while True:
         state="follow_mode"
         if state=="follow_mode":
-            if state_follow_mode()=="restart": state="restart"
+            state=state_follow_mode()
         if state=="restart":
             state_restart()
             state="follow_mode"
+        if state=="throttled":
+            state_throttled()
+            state="follow_mode"
+            
+        state_loops=state_loops+1
+        print(f"Total state loops?: {state_loops}")
             
 
 def unfollow_mode_main():
+    time.sleep(3)
+    orientate_terminal()
     state_restart()
     while True:
         state="unfollow_mode"
@@ -134,20 +149,13 @@ def unfollow_mode_main():
             state="unfollow_mode"
          
 
-def state_throttled(mode):
-    logger.log("Bot is unable to follow more right now. Waiting 5 minutes.")
-    loops=300
+def state_throttled():
+    logger.log("Bot is unable to follow more right now. Waiting 30 minutes.")
+    loops=1800
     while loops>0:
-        check_quit_key_press()
-        logger.log(f"Waiting {loops} seconds more.")
-        time.sleep(1)
         loops=loops-1
-    if mode ==0:
-        return "intro"
-    if mode ==1:
-        return "unfollow_mode"
-    if mode ==2:
-        return "follow_mode"
+        if (loops % 4 == 0): logger.log(f"Throttled. Waiting {loops} sec more.")
+
 
 
 def state_restart():

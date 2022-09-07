@@ -23,7 +23,6 @@ class Database:
                
                 
     def create_database(self):
-        
         if not isdir(self.top_level):
             makedirs(self.top_level)
         if not exists(self.database_file):

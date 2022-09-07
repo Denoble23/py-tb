@@ -1,18 +1,22 @@
 import math
+import os
 import random
 import subprocess
 import sys
 import time
 from unittest.mock import sentinel
+
 import keyboard
-from matplotlib import pyplot as plt
 import numpy
 import pyautogui
 import pygetwindow
-import os
 import pyperclip
+from matplotlib import pyplot as plt
+from pywinauto.keyboard import send_keys
+from screeninfo import get_monitors
 
-from image_rec import check_for_location, coords_is_equal, find_references, pixel_is_equal
+from image_rec import (check_for_location, coords_is_equal, find_references,
+                       pixel_is_equal)
 
 
 def scroll_down():
@@ -121,8 +125,6 @@ def handle_edge_restore_notification(logger):
         time.sleep(0.2)
         pyautogui.moveTo(origin[0],origin[1],duration=0.33)
     
-    
-
 
 def open_twitter_in_edge(logger):
     logger.log("Opening twitter from edge main.")
@@ -133,7 +135,7 @@ def open_twitter_in_edge(logger):
     #type out twitter.com
     pyautogui.typewrite("twitter.com",interval=0.01)
     time.sleep(1)
-    pyautogui.press('enter')
+    pyautogui.click(188,99)
     time.sleep(3)
     
     handle_edge_restore_notification(logger)
@@ -517,7 +519,7 @@ def check_if_name_is_in_file(name,file):
 
 def get_name_of_current_profile():
     #click coord and copy name
-    pyautogui.moveTo(205,450,duration=1)
+    pyautogui.moveTo(190,450,duration=1)
     pyautogui.click(clicks=2,interval=0.2)
     time.sleep(0.2)
     pyautogui.keyDown('ctrl')
@@ -580,7 +582,6 @@ def click_list_of_follow_buttons(follow_button_list,logger):
         return "throttled"
         
         
-
 def unfollow_from_following_page(logger):
     check_quit_key_press()
     has_more_to_unfollow=True
@@ -639,9 +640,6 @@ def check_for_restore_pages_notification():
     return True
 
 
-
-
-
 def find_follow_buttons():
     check_quit_key_press()
     
@@ -662,5 +660,34 @@ def find_follow_buttons():
             coord_list.append(current_coord)
     
     return coord_list
+    
+    
+def get_screen_resolution():
+    monitor_1=get_monitors()[0]
+    w=monitor_1.width
+    h=monitor_1.height
+    return [w,h]
+
+
+def orientate_terminal():
+    try:
+        terminal_window = pygetwindow.getWindowsWithTitle(
+            "Twitter Bot")[0]
+        terminal_window.minimize()
+        terminal_window.restore()
+
+        #resize according to monitor width
+        monitor_width=get_screen_resolution()[0]
+        monitor_height=get_screen_resolution()[1]
+        terminal_width=monitor_width-1210
+        terminal_window.resizeTo(terminal_width, monitor_height)
+
+        #move window
+        terminal_window.moveTo(1205, 5)
+    except BaseException:
+        print("Couldn't orientate terminal.")
+
+    
+    
     
     
