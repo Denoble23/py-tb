@@ -1,4 +1,5 @@
 
+import sys
 import time
 
 import numpy
@@ -26,10 +27,12 @@ def main_gui():
     out_text=""
     out_text=out_text+"-Python Twitter bot - Matthew Miglio ~June 2022\n\n"
     out_text=out_text+"-HOLDING SPACE TERMINATES THE PROGRAM\n\n"
-    out_text=out_text+"-Path to edge launcher is hard coded in\m\m"
+    out_text=out_text+"-Path to edge launcher is @ \AppData\Roaming\py-tb\config.json\n"
+    out_text=out_text+" Make sure the path is specified in the same format as the default example\n"
+    
     
     sg.theme('Material2')
-    # defining various things that r gonna be in the gui.
+    
     layout = [
         [sg.Text(out_text)],
         [sg.Radio('Follow mode', "RADIO1", default=False, key="-Follow_IN-")],
@@ -39,15 +42,15 @@ def main_gui():
         [sg.Button('Start'), sg.Button('Help'), sg.Button('Donate')]
         # https://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD
     ]
-    # window layout
+    
     window = sg.Window('PY-TarkBot', layout)
-    # run the gui
+
     while True:
-        # get gui vars
         event, values = window.read()
-        # if gui sees close then close
+
         if event == sg.WIN_CLOSED or event == 'Exit':
             break
+        
         
         if event== "Start":
             if values["-Unfollow_IN-"]:
@@ -56,10 +59,11 @@ def main_gui():
             if values["-Follow_IN-"]:
                 window.close()
                 follow_mode_main()
-            
-            
+             
+             
         if event== "Donate":
             show_donate_gui()
+            
             
         if event== "Help":
             show_help_gui()
@@ -108,8 +112,6 @@ def show_help_gui():
     window.close()
 
 
-
-
 def follow_mode_main():
     state_restart()
     while True:
@@ -131,47 +133,6 @@ def unfollow_mode_main():
             state_restart()
             state="unfollow_mode"
          
-
-
-
-
-# def main():
-#     state="restart"
-    
-#     mode=0
-#     while True:
-#         logger.log(f"---------CURRENT STATE IS {state}---------")
-        
-#         if state=="restart":
-#             state=state_restart(mode)
-#         if state=="intro":
-#             logger.log("-----STATE=intro")
-#             logger.log("Select mode")
-#             # mode select
-#             value = input("Select mode: \n [1]unfollow all mode \n [2]follow mode \n")
-#             value = int(value)
-#             logger.log(value)
-#             mode=value
-#             if mode ==0:
-#                 state= "intro"
-#             if mode ==1:
-#                 state= "unfollow_mode"
-#             if mode ==2:
-#                 state= "follow_mode"
-#         if state=="unfollow_mode":
-#             state=state_unfollow_mode()
-#         if state=="follow_mode":
-#             state=state_follow_mode()
-#         if state=="throttled":
-#             state=state_throttled(mode)
-        
-#         if mode ==0:
-#             state= "intro"
-#         if mode ==1:
-#             state= "unfollow_mode"
-#         if mode ==2:
-#             state= "follow_mode"
-
 
 def state_throttled(mode):
     logger.log("Bot is unable to follow more right now. Waiting 5 minutes.")
@@ -266,5 +227,20 @@ def state_follow_mode():
             logger.log("Had trouble locating the followers button on this profile. Skipping this profile.")
 
 
+def end_loop():
+    print("Press ctrl-c to close the program.")
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        sys.exit()
+
+
+
 if __name__ == "__main__":
-    main_gui()
+    try:
+        main_gui()
+    except Exception as e:
+        print(e)
+        end_loop()
+
