@@ -41,7 +41,7 @@ def main_gui():
         # https://www.paypal.com/donate/?business=YE72ZEB3KWGVY&no_recurring=0&item_name=Support+my+projects%21&currency_code=USD
     ]
 
-    window = sg.Window('PY-TarkBot', layout)
+    window = sg.Window('py-tb', layout)
 
     while True:
         event, values = read_window(window)
