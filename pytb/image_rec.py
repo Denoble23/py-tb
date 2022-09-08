@@ -111,7 +111,7 @@ def find_all_references(screenshot: Union[numpy.ndarray,
                                           Image.Image],
                         folder: str,
                         names: list[str],
-                        tolerance=0.97) -> list[Union[list[int], None]]:
+                        tolerance=0.97):
     """find all reference images in a screenshot
 
     Args:
