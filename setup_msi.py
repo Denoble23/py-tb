@@ -18,15 +18,14 @@ bdist_msi_options = {
 }
 
 dependencies = [
-    'comtypes', 'cx-Freeze', 'cycler', 'fonttools',
+    'comtypes', 'cycler',
     'joblib', 'keyboard', 'kiwisolver',
-    'lief', 'matplotlib', 'MouseInfo',
-    'numpy', 'opencv-python', 'packaging',
-    'Pillow', 'PyAutoGUI', 'PyGetWindow',
-    'PyMsgBox', 'pyparsing', 'pyperclip',
-    'PyRect', 'PyScreeze', 'PySimpleGUI',
-    'python-dateutil', 'pytweening', 'pywin32',
-    'pywinauto', 'screeninfo', 'six',
+    'lief', 'matplotlib', 'six',
+    'numpy', 'cv2', 'packaging',
+    'PIL', 'pyautogui', 'pygetwindow',
+    'pymsgbox', 'pyparsing', 'pyperclip',
+    'pyrect', 'pyscreeze', 'PySimpleGUI',
+    'pytweening', 'pywinauto', 'screeninfo',
 ]
 
 build_exe_options = {
