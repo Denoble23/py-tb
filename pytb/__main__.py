@@ -1,4 +1,3 @@
-
 import sys
 import time
 
@@ -22,15 +21,14 @@ launcher_path = user_settings["launcher_path"]
 
 
 def main_gui():
-    out_text = ""
-    out_text = out_text+"-Python Twitter bot - Matthew Miglio ~June 2022\n\n"
-    out_text = out_text + \
-        "-1. Holding space terminates the program, and holding pause pauses the program.\n\n"
-    out_text = out_text+"-2. Specify the location of your microsoft edge in the config file @ \AppData\Roaming\py-tb\config.json\n"
-    out_text = out_text + \
-        "     Make sure the path is specified in the same format as the default example!\n\n"
-    out_text = out_text+"-3. Select a mode:\n"
-
+    out_text = \
+        """
+-Python Twitter bot - Matthew Miglio ~June 2022\n\n
+-1. Holding space terminates the program, and holding pause pauses the program.\n\n
+-2. Specify the location of your microsoft edge in the config file @ \\AppData\\Roaming\\py-tb\\config.json\n
+    Make sure the path is specified in the same format as the default example!\n\n
+-3. Select a mode:\n
+"""
     sg.theme('Material2')
 
     layout = [
@@ -46,7 +44,7 @@ def main_gui():
     window = sg.Window('PY-TarkBot', layout)
 
     while True:
-        event, values = window.read()
+        event, values = read_window(window)
 
         if event == sg.WIN_CLOSED or event == 'Exit':
             break
@@ -79,7 +77,7 @@ def show_donate_gui():
     ]
     window = sg.Window('PY-TwitterBot', layout)
     while True:
-        event, values = window.read()
+        event, values = read_window(window)
         if event == sg.WIN_CLOSED or event == 'Exit':
             break
 
@@ -103,7 +101,7 @@ def show_help_gui():
     layout = [[sg.Text(out_text)], ]
     window = sg.Window('PY-TwitterBot', layout)
     while True:
-        event, values = window.read()
+        event, values = read_window(window)
         if event == sg.WIN_CLOSED or event == 'Exit':
             break
     window.close()
@@ -135,9 +133,8 @@ def unfollow_mode_main():
     state_restart()
     while True:
         state = "unfollow_mode"
-        if state == "unfollow_mode":
-            if state_unfollow_mode() == "restart":
-                state = "restart"
+        if state == "unfollow_mode" and state_unfollow_mode() == "restart":
+            state = "restart"
         if state == "restart":
             state_restart()
             state = "unfollow_mode"
@@ -230,6 +227,14 @@ def state_follow_mode():
         else:
             logger.log(
                 "Had trouble locating the followers button on this profile. Skipping this profile.")
+
+
+def read_window(window: sg.Window):
+    read_result = window.read()
+    if read_result is None:
+        print("Window not found")
+        end_loop()
+    return read_result
 
 
 def end_loop():
