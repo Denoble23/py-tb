@@ -5,9 +5,9 @@ from typing import Union
 
 import cv2
 import numpy
+import pyautogui
 from joblib import Parallel, delayed
 from PIL import Image
-import pyautogui
 
 
 def screenshot(region=(0, 0, 1920, 1080)):
@@ -17,15 +17,15 @@ def screenshot(region=(0, 0, 1920, 1080)):
         return pyautogui.screenshot(region=region)
 
 
-def coords_is_equal(coords_A,coords_B,tol=30):
-    if (coords_A is None)or(coords_B is None):
+def coords_is_equal(coords_A, coords_B, tol=30):
+    if (coords_A is None) or (coords_B is None):
         return
-    coords_1_diff=abs(coords_A[0]-coords_B[0])
-    coords_2_diff=abs(coords_A[1]-coords_B[1])
-    if (coords_1_diff<tol)and(coords_2_diff<tol):
+    coords_1_diff = abs(coords_A[0]-coords_B[0])
+    coords_2_diff = abs(coords_A[1]-coords_B[1])
+    if (coords_1_diff < tol) and (coords_2_diff < tol):
         return True
     return False
-    
+
 
 def get_avg_pix(region):
     left = region[0]
@@ -38,8 +38,8 @@ def get_avg_pix(region):
     pixels = pixels.reshape((d1*d2, d3))
     avg_pix = numpy.mean(pixels, axis=0)
     return avg_pix
-              
-            
+
+
 def print_avg_pixels(avg_pixels):
     column_count = 19
     current_column = 1
@@ -111,7 +111,7 @@ def find_all_references(screenshot: Union[numpy.ndarray,
                                           Image.Image],
                         folder: str,
                         names: list[str],
-                        tolerance=0.97) -> list[Union[list[int], None]]:
+                        tolerance=0.97):
     """find all reference images in a screenshot
 
     Args:
@@ -141,7 +141,7 @@ def find_reference(screenshot: Union[numpy.ndarray,
                    name: str,
                    tolerance=0.97):
     """find a reference image in a screenshot
-    
+
     Args:
         screenshot (Union[np.ndarray, Image.Image]): find reference in screenshot
         folder (str): folder to find reference (from within reference_images)
@@ -155,7 +155,7 @@ def find_reference(screenshot: Union[numpy.ndarray,
     reference_folder = join(top_level, "reference_images")
     return compare_images(
         screenshot,
-            Image.open(
+        Image.open(
             join(
                 reference_folder,
                 folder,
