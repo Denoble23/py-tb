@@ -154,6 +154,7 @@ def state_throttled():
     loops=1800
     while loops>0:
         loops=loops-1
+        time.sleep(1)
         if (loops % 4 == 0): logger.log(f"Throttled. Waiting {loops} sec more.")
 
 
