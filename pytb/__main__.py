@@ -149,7 +149,6 @@ def state_throttled():
         if (loops % 4 == 0): logger.log(f"Throttled. Waiting {loops} sec more.")
 
 
-
 def state_restart():
     logger.add_restart()
     logger.log("-----STATE=restart")
@@ -202,19 +201,9 @@ def state_unfollow_mode():
 def state_follow_mode():
     logger.log("-----STATE=follow_mode")
     while True:
-        # get to profile page
-        if get_to_profile_page(logger) == "restart":
-            return "restart"
-        time.sleep(0.33)
-
-        # get to list of my followers
-        if get_to_followers_page(logger) == "restart":
-            return "restart"
-        time.sleep(1)
-
         # get a account to spam follow
-        get_to_random_account_from_followers_list(
-            logger, users_ive_followed_from_database)
+        if get_to_random_account_from_followers_list(
+            logger, users_ive_followed_from_database)=="restart": return "restart"
         time.sleep(0.33)
 
         # get to their followers page

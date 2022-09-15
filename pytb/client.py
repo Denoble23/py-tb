@@ -183,8 +183,8 @@ def get_to_profile_page(logger):
     time.sleep(1)
 
     if not(check_if_on_profile_page()):
-        logger.log("Recalling get to profile page()")
-        get_to_profile_page(logger)
+        logger.log("Failed to get to profile page.")
+        return "restart"
 
     logger.log("Made it to profile page.")
 
@@ -467,7 +467,16 @@ def randomly_scroll_down(logger):
 
 
 def get_to_random_account_from_followers_list(logger,users_ive_followed_from_database):
-    #method starts on follower list page and ends on the profile of a random guy
+    # get to profile page
+    if get_to_profile_page(logger) == "restart":
+        return "restart"
+    time.sleep(0.33)
+
+    # get to list of my followers
+    if get_to_followers_page(logger) == "restart":
+        return "restart"
+    time.sleep(1)
+    
     #randomly scroll
     logger.log("Randomly scrolling.")
     randomly_scroll_down(logger)
@@ -490,19 +499,162 @@ def get_to_random_account_from_followers_list(logger,users_ive_followed_from_dat
         logger.log("This account has been targetted before. Redoing search algorithm.")
         #if name is found, we need a new name
         #return to list of followers
-        get_to_profile_page(logger)
+        if get_to_profile_page(logger)== "restart": return "restart"
         time.sleep(2)
         check_quit_key_press()
         get_to_followers_page(logger)
         time.sleep(2)
         check_quit_key_press()
-
         #call this method again
         get_to_random_account_from_followers_list(logger,users_ive_followed_from_database)
-    else:
-        #if the name isnt in the file, add this name to the file, then return.
-        logger.log("Verified that the chosen account is unique. Writing this username to the database.")
+    logger.log("This name passed registry check.")
+    
+    #check if this name contains blacklist strings
+    if not(check_for_blacklist_in_text(name)):
+        logger.log("Blacklisted name detected. Skipping this account.")
+        #write this name to db so we dont have to check again
         users_ive_followed_from_database.add_username_to_database(name)
+        #call this method again
+        get_to_random_account_from_followers_list(logger,users_ive_followed_from_database)
+    logger.log("This name passed blacklist check.")
+    
+    
+    #check if this profile's bio contains blacklist strings
+    bio_text=get_this_profiles_bio_text()
+    if not(check_for_blacklist_in_text(bio_text)):
+        logger.log("This profile's bio failed the blacklist check. Skipping this profile")
+        #write this name to db so we dont have to check again
+        users_ive_followed_from_database.add_username_to_database(name)
+        #call this method again
+        get_to_random_account_from_followers_list(logger,users_ive_followed_from_database)
+    
+    
+    #if the name isnt in the file, add this name to the file, then return.
+    logger.log("Verified that the chosen account is satisfactory. Writing this username to the database.")
+    users_ive_followed_from_database.add_username_to_database(name)
+
+
+def get_this_profiles_bio_text():
+    #close dm tab
+    close_messages_tab()
+    
+    #click open space
+    pyautogui.click(190,450)
+    
+    #select region of bio
+    # pyautogui.moveTo(118,471)
+    # pyautogui.dragTo(610,659,duration=0.33)
+    ####select all
+    pyautogui.keyDown('ctrl')
+    time.sleep(0.2)
+    pyautogui.press('a')
+    time.sleep(0.2)
+    pyautogui.keyUp('ctrl')
+    time.sleep(0.2)
+    
+    time.sleep(0.2)
+    #copy it
+    pyautogui.keyDown('ctrl')
+    time.sleep(0.2)
+    pyautogui.press('c')
+    time.sleep(0.2)
+    pyautogui.keyUp('ctrl')
+    time.sleep(0.2)
+    
+    text= pyperclip.paste()
+    
+    #cut text to char count
+    shortened_text=""
+    index=000
+    while index<500:
+        shortened_text=shortened_text+text[index]
+        index=index+1
+        
+    return shortened_text
+        
+        
+def check_for_blacklist_in_text(text):
+    #essentially blacklists any accounts having to do with sports, anime, onlyfans, youngboy, or anything promotional (like premium snap, dm fees, artists looking for comissions)
+    blacklist=[
+    "DubNation"
+    ,"DUBNATION"
+    ,"dubnation"
+    ,"NBA"
+    ,"nba"
+    ,"Nba"
+    ,"broke"
+    ,"Broke"
+    ,"youngboy" 
+    ,"YoungBoy" 
+    ,"YoungBoy Never Broke Again"
+    ,"never nroke again"
+    ,"Never nroke again"
+    ,"Kentrell"
+    ,"Rapper" 
+    ,"YOUNG" 
+    ,"BETTER" 
+    ,"BROKE" 
+    ,"NEVER" 
+    ,"AGAIN" 
+    ,"YOUNGBOY"
+    ,"BLOCK" 
+    ,"UNFOLLOW="
+    ,"unfollow="
+    ,"ratio" 
+    ,"RATIO" 
+    ,"I Own You"
+    ,"i own you"
+    ,"I own you"
+    ,"I OWN YOU"
+    ,"an L"
+    ,"AN L"
+    ,"TOP9"
+    ,"TOP1"
+    ,"TOP2"
+    ,"TOP3"
+    ,"TOP4"
+    ,"TOP5"
+    ,"TOP6"
+    ,"TOP7"
+    ,"TOP8"
+    ,"onlyfans"
+    ,"OF" 
+    ,"ONLYFANS"
+    ,"free" 
+    ,"FREE" 
+    ,"I follow back"
+    ,"I fb" 
+    ,"block" 
+    ,"notis" 
+    ,"christ" 
+    ,"jesus"
+    ,"Jesus"
+    ,"manga"
+    ,"anime"
+    ,"promo"
+    ,"dm me for"
+    ,"Dm Fee" 
+    ,"DM fee" 
+    ,"dm fee" 
+    ,"DM FEE" 
+    ,"DM ME"
+    ,"DM me"
+    ,"dm me"
+    ,"Dm me"
+    ,"cosplay" 
+    ,"FOLLOW BACK"
+    ,"follow back"
+    ,"L's",
+    
+    
+    ]
+    
+    for string in blacklist:
+        if string in text:
+            print("Failed blacklist check with string: [",string,"]")
+            return False
+    
+    return True
 
 
 def check_if_name_is_in_file(name,file):
@@ -682,6 +834,35 @@ def orientate_terminal():
         terminal_window.moveTo(1205, 5)
     except BaseException:
         print("Couldn't orientate terminal.")
+
+
+def close_messages_tab():
+    if check_if_messages_tab_is_open():
+        print("closing messages tab")
+        pyautogui.moveTo(1057,688,duration=0.33)
+        time.sleep(0.33)
+        pyautogui.click()
+        time.sleep(0.33)
+
+
+def check_if_messages_tab_is_open():
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+    ]
+
+    locations = find_references(
+        screenshot=screenshot(),
+        folder="find_messages_tab",
+        names=references,
+        tolerance=0.97
+    )
+
+    return check_for_location(locations)
+    
+    
 
 
 
