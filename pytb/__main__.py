@@ -33,8 +33,8 @@ def main_gui():
 
     layout = [
         [sg.Text(out_text)],
-        [sg.Radio('Follow mode', "RADIO1", default=False, key="-Follow_IN-")],
-        [sg.Radio('Unfollow mode', "RADIO1", default=True, key="-Unfollow_IN-")],
+        [sg.Radio('Follow mode', "RADIO1", default=True, key="-Follow_IN-")],
+        [sg.Radio('Unfollow mode', "RADIO1", default=False, key="-Unfollow_IN-")],
 
         # buttons
         [sg.Button('Start'), sg.Button('Help'), sg.Button('Donate')]
