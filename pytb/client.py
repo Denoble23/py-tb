@@ -12,7 +12,7 @@ import pyperclip
 from screeninfo import get_monitors
 
 from pytb.image_rec import (check_for_location, coords_is_equal,
-                            find_references, pixel_is_equal)
+                            find_references, get_first_location, pixel_is_equal)
 
 
 def scroll_down():
@@ -449,8 +449,8 @@ def fast_scroll_down():
     pyautogui.dragTo(1182,1155,duration=0.3)
 
 
-def randomly_scroll_down(logger):
-    scrolls=random.randint(0,7)
+def randomly_scroll_down(logger,scroll_limit=7):
+    scrolls=random.randint(0,scroll_limit)
     while scrolls>0:
         check_quit_key_press()
         logger.log(f"Scrolling: {scrolls}")
@@ -466,7 +466,7 @@ def randomly_scroll_down(logger):
         scrolls=scrolls-1
 
 
-def get_to_random_account_from_followers_list(logger,users_ive_followed_from_database):
+def get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_followed_from_database):
     # get to profile page
     if get_to_profile_page(logger) == "restart":
         return "restart"
@@ -497,42 +497,55 @@ def get_to_random_account_from_followers_list(logger,users_ive_followed_from_dat
     #check if name in file
     if users_ive_followed_from_database.check_if_user_in_users_followed_database(name):
         logger.log("This account has been targetted before. Redoing search algorithm.")
-        #if name is found, we need a new name
-        #return to list of followers
-        if get_to_profile_page(logger)== "restart": return "restart"
-        time.sleep(2)
-        check_quit_key_press()
-        get_to_followers_page(logger)
-        time.sleep(2)
-        check_quit_key_press()
-        #call this method again
-        get_to_random_account_from_followers_list(logger,users_ive_followed_from_database)
-    logger.log("This name passed registry check.")
+        logger.log("Skipping this profile and recalling this method.")
+        get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_followed_from_database)
+    logger.log("1. This name passed registry check.")
     
     #check if this name contains blacklist strings
-    if not(check_for_blacklist_in_text(name)):
-        logger.log("Blacklisted name detected. Skipping this account.")
-        #write this name to db so we dont have to check again
+    name_check=(check_for_blacklist_in_text(name))
+    if name_check != "pass":
+        logger.log(f"The name [{name}] failed blacklist check with string [{name_check}]")
+        logger.log("Skipping this profile and recalling this method.")
         users_ive_followed_from_database.add_username_to_database(name)
-        #call this method again
-        get_to_random_account_from_followers_list(logger,users_ive_followed_from_database)
-    logger.log("This name passed blacklist check.")
+        get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_followed_from_database)
+    logger.log("2. This name passed blacklist check.")
     
     
     #check if this profile's bio contains blacklist strings
     bio_text=get_this_profiles_bio_text()
-    if not(check_for_blacklist_in_text(bio_text)):
-        logger.log("This profile's bio failed the blacklist check. Skipping this profile")
+    bio_check=check_for_blacklist_in_text(bio_text)
+    if bio_check != "pass":
+        logger.log(f"This bio failed the blacklist check with string [{bio_check}]")
+        logger.log("Skipping this profile and recalling this method.")
         #write this name to db so we dont have to check again
         users_ive_followed_from_database.add_username_to_database(name)
         #call this method again
-        get_to_random_account_from_followers_list(logger,users_ive_followed_from_database)
-    
+        get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_followed_from_database)
+    logger.log("3. This bio passed blacklist check.")
     
     #if the name isnt in the file, add this name to the file, then return.
     logger.log("Verified that the chosen account is satisfactory. Writing this username to the database.")
     users_ive_followed_from_database.add_username_to_database(name)
 
+
+def get_to_random_account_from_followers_list(logger):
+    #starts on followers list page, ends on the page of a random follower
+    
+    #randomly scroll
+    logger.log("Randomly scrolling.")
+    randomly_scroll_down(logger,scroll_limit=20)
+
+    #target account
+    logger.log("Clicking chosen random account.")
+    x_coord=187
+    y_coord=random.randint(190,1142)
+    coord=[x_coord,y_coord]
+    click(coord[0],coord[1])
+    check_quit_key_press()
+    
+    
+    
+    
 
 def get_this_profiles_bio_text():
     #close dm tab
@@ -652,9 +665,9 @@ def check_for_blacklist_in_text(text):
     for string in blacklist:
         if string in text:
             print("Failed blacklist check with string: [",string,"]")
-            return False
+            return string
     
-    return True
+    return 'pass'
 
 
 def check_if_name_is_in_file(name,file):
@@ -667,7 +680,7 @@ def check_if_name_is_in_file(name,file):
 
 def get_name_of_current_profile():
     #click coord and copy name
-    pyautogui.moveTo(190,450,duration=1)
+    pyautogui.moveTo(150,450,duration=0.2)
     pyautogui.click(clicks=2,interval=0.2)
     time.sleep(0.2)
     pyautogui.keyDown('ctrl')
@@ -861,6 +874,71 @@ def check_if_messages_tab_is_open():
     )
 
     return check_for_location(locations)
+    
+    
+def find_more_profile_actions_button():
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+    ]
+
+    locations = find_references(
+        screenshot=screenshot(),
+        folder="find_more_profile_actions_button",
+        names=references,
+        tolerance=0.97
+    )
+
+    coords= get_first_location(locations)
+    return [coords[1],coords[0]]
+
+
+def find_block_button():
+    references = [
+        "1.png",
+        "2.png",
+        "3.png",
+        "4.png",
+        "5.png",
+        
+    ]
+
+    locations = find_references(
+        screenshot=screenshot(),
+        folder="find_block_button",
+        names=references,
+        tolerance=0.97
+    )
+
+    coords= get_first_location(locations)
+    return [coords[1],coords[0]]
+
+
+def block_this_profile(logger):
+    #click three dots on this profile
+    logger.log("Opening the more actions tab for this profile.")
+    more_actions_button_coords=find_more_profile_actions_button()
+    pyautogui.moveTo(more_actions_button_coords[0],more_actions_button_coords[1],duration=0.33)
+    time.sleep(0.33)
+    pyautogui.click()
+    time.sleep(2)
+    
+    #click block
+    logger.log("Clicking block button from list of more profile actions.")
+    block_button_coords=find_block_button()
+    pyautogui.moveTo(block_button_coords[0],block_button_coords[1],duration=0.33)
+    time.sleep(0.33)
+    pyautogui.click()
+    time.sleep(2)
+    
+    #click confirm block
+    logger.log("Clicking red block button to confirm block.")
+    confirm_block_button_coords=[567,673]
+    pyautogui.moveTo(confirm_block_button_coords[0],confirm_block_button_coords[1],duration=0.33)
+    time.sleep(0.33)
+    pyautogui.click()
+    time.sleep(1)
     
     
 

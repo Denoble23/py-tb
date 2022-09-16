@@ -15,6 +15,8 @@ class Logger:
         self.unfollows = 0
         self.follows = 0
         self.restarts = 0
+        self.accounts_examined = 0
+        self.blocks = 0
 
     def make_timestamp(self):
         """creates a time stamp for log output
@@ -30,17 +32,6 @@ class Logger:
         output_string = time_str
 
         return output_string
-
-    def make_score_board(self):
-        """creates scoreboard for log output
-
-        Returns:
-            str: log scoreboard
-        """
-        wins_str = str(self.wins) + "W"
-        losses_str = str(self.losses) + "L"
-        gap_str = "|"
-        return wins_str + gap_str + losses_str
 
     def convert_int_to_time(self, seconds):
         """convert epoch to time
@@ -64,7 +55,7 @@ class Logger:
         Args:
             message (str): message to add
         """
-        print(f"{self.make_timestamp()}||{self.unfollows} unfollows ||{self.follows} follows||{self.restarts} restarts: {message}")
+        print(f"{self.make_timestamp()}||{self.unfollows} unfollows ||{self.follows} follows||{self.accounts_examined} accounts examined|| {self.blocks} accounts blocked||{self.restarts} restarts: {message}")
 
     def add_win(self):
         """add win to log
@@ -100,4 +91,14 @@ class Logger:
         """add restart to log
         """
         self.restarts += 1
+
+    def add_account_examined(self):
+        """add restart to log
+        """
+        self.accounts_examined += 1
+
+    def add_block(self):
+        """add restart to log
+        """
+        self.blocks += 1
 

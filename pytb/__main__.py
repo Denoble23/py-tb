@@ -5,10 +5,10 @@ import pyautogui
 import pyperclip
 import PySimpleGUI as sg
 
-from pytb.client import (click_list_of_follow_buttons, find_follow_buttons,
-                         find_following_button, get_to_followers_page,
-                         get_to_following_page, get_to_profile_page,
-                         get_to_random_account_from_followers_list,
+from pytb.client import (block_this_profile, click_list_of_follow_buttons, find_follow_buttons,
+                         find_following_button, get_name_of_current_profile, get_this_profiles_bio_text, get_to_followers_page,
+                         get_to_following_page, get_to_profile_page, get_to_random_account_from_followers_list,
+                         get_to_random_account_from_followers_list_with_blacklist,
                          orientate_terminal, restart_twitter)
 from pytb.configuration import load_user_settings
 from pytb.database import Database
@@ -35,6 +35,8 @@ def main_gui():
         [sg.Text(out_text)],
         [sg.Radio('Follow mode', "RADIO1", default=True, key="-Follow_IN-")],
         [sg.Radio('Unfollow mode', "RADIO1", default=False, key="-Unfollow_IN-")],
+        [sg.Radio('Block youngboy accounts mode', "RADIO1", default=False, key="-BlockYB-IN-")],
+        
 
         # buttons
         [sg.Button('Start'), sg.Button('Help'), sg.Button('Donate')]
@@ -56,6 +58,9 @@ def main_gui():
             if values["-Follow_IN-"]:
                 window.close()
                 follow_mode_main()
+            if values["-BlockYB-IN-"]:
+                window.close()
+                block_nba_accounts_main()
 
         if event == "Donate":
             show_donate_gui()
@@ -202,7 +207,7 @@ def state_follow_mode():
     logger.log("-----STATE=follow_mode")
     while True:
         # get a account to spam follow
-        if get_to_random_account_from_followers_list(
+        if get_to_random_account_from_followers_list_with_blacklist(
             logger, users_ive_followed_from_database)=="restart": return "restart"
         time.sleep(0.33)
 
@@ -234,6 +239,94 @@ def end_loop():
             pass
     except KeyboardInterrupt:
         sys.exit()
+
+
+def block_nba_accounts_main():
+    time.sleep(3)
+    orientate_terminal()
+    state_restart()
+    while True:
+        state = "Block NBA accounts Mode"
+        if state == "Block NBA accounts Mode" and state_block_nba_accounts() == "restart":
+            state = "restart"
+        if state == "restart":
+            state_restart()
+            state = "Block NBA accounts Mode"
+
+
+def state_block_nba_accounts():
+    nba_account_blacklist=[
+        "youngboy",
+        "YoungBoy",
+        "YOUNGBOY",
+        "nba",
+        "NBA",
+        "Nba",
+        "I own u",
+        "i own u",
+        "I own you",
+        "I OWN YOU",
+        "I Own You",
+        "Block",
+        "BLOCK",
+        "block",
+        "ratio",
+        "RATIO",
+        "Ratio",
+        "L's",
+        "taken an L",
+        "Taken An L",
+        "TAKEN AN L",
+        "never broke",
+        "NEVER BROKE",
+        "Never Broke",
+    ]
+    
+    while True:
+        #get to profile
+        if get_to_profile_page(logger)== "restart": return "restart"
+        
+        #get to follower list
+        if get_to_followers_page(logger)== "restart": return "restart"
+        
+        #get random follower
+        get_to_random_account_from_followers_list(logger)
+        logger.add_account_examined()
+        
+        #get this account's name
+        name=get_name_of_current_profile()
+        log=f"This profile's name is [{name}]"
+        logger.log(log)
+
+        
+        #check if this name has any of the blacklists
+        block_this_guy=False
+        for string in nba_account_blacklist:
+            if string in name:
+                log=f"The name [{name}] failed when comapred against [{string}]"
+                logger.log(log)
+                logger.log("Marking this account for block.")
+                block_this_guy=True
+        if not(block_this_guy): logger.log("This account passed name check.")
+        
+        #check is this bio has any of the blacklists
+        bio_text=get_this_profiles_bio_text()
+        for string in nba_account_blacklist:
+            if string in bio_text:
+                log=f"This profile's bio failed when comapred against [{string}]"
+                logger.log(log)
+                block_this_guy=True
+        if not(block_this_guy): logger.log("This account passed bio check.")
+        
+        #if block this guy then block this guy
+        if block_this_guy:
+            logger.log("Starting block alg")
+            block_this_profile(logger)
+            logger.add_block()
+        else:
+            logger.log("This profile is safe.\n\n")
+            
+        logger.log("Next account\n\n")
 
 
 if __name__ == "__main__":

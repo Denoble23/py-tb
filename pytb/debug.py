@@ -8,8 +8,8 @@ import pyautogui
 import pyperclip
 from matplotlib import pyplot as plt
 
-from pytb.client import (check_for_blacklist_in_text,
-                         get_this_profiles_bio_text, screenshot)
+from pytb.client import (check_for_blacklist_in_text, get_name_of_current_profile,
+                         get_this_profiles_bio_text, get_to_random_account_from_followers_list, get_to_random_account_from_followers_list_with_blacklist, screenshot)
 from pytb.configuration import load_user_settings
 from pytb.database import Database
 from pytb.image_rec import (check_for_location, coords_is_equal,
@@ -29,8 +29,4 @@ launcher_path = user_settings["launcher_path"]
 
 
 
-
-
-
-text=get_this_profiles_bio_text()
-check_for_blacklist_in_text(text)
+get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_followed_from_database)
