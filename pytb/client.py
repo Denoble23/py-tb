@@ -834,8 +834,13 @@ def get_screen_resolution():
 
 def orientate_terminal():
     try:
-        terminal_window = pygetwindow.getWindowsWithTitle(
-            "Twitter Bot")[0]
+        #get window
+        terminal_window = pygetwindow.getWindowsWithTitle("Twitter Bot")[0]
+        if len(terminal_window)==0:
+            terminal_window = pygetwindow.getWindowsWithTitle("py-tb v")[0]
+
+
+
         terminal_window.minimize()
         terminal_window.restore()
 
