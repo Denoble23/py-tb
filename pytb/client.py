@@ -489,17 +489,17 @@ def get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_fo
     click(coord[0],coord[1])
     check_quit_key_press()
 
-    #check if account has been targetted
+
     #get name of current guy
-    logger.log("Checking if this account has been targetted before.")
     name=get_name_of_current_profile()
+    logger.log(f"This profile's name is [{name}]")
 
     #check if name in file
     if users_ive_followed_from_database.check_if_user_in_users_followed_database(name):
         logger.log("This account has been targetted before. Redoing search algorithm.")
         logger.log("Skipping this profile and recalling this method.")
         get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_followed_from_database)
-    logger.log("1. This name passed registry check.")
+    logger.log("1. This name passed database check.")
     
     #check if this name contains blacklist strings
     name_check=(check_for_blacklist_in_text(name))
@@ -658,7 +658,9 @@ def check_for_blacklist_in_text(text):
     ,"FOLLOW BACK"
     ,"follow back"
     ,"L's",
-    
+    "ratio",
+    "Ratio",
+    "RATIO",
     
     ]
     

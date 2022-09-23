@@ -29,4 +29,6 @@ launcher_path = user_settings["launcher_path"]
 
 
 
-get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_followed_from_database)
+
+name="test"
+print(users_ive_followed_from_database.check_if_user_in_users_followed_database(name))
