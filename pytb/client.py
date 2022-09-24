@@ -9,10 +9,12 @@ import numpy
 import pyautogui
 import pygetwindow
 import pyperclip
+from matplotlib import pyplot as plt
 from screeninfo import get_monitors
 
 from pytb.image_rec import (check_for_location, coords_is_equal,
-                            find_references, get_first_location, pixel_is_equal)
+                            find_references, get_first_location,
+                            pixel_is_equal)
 
 
 def scroll_down():
@@ -91,7 +93,7 @@ def orientate_edge_window(logger):
     time.sleep(1)
 
     logger.log('Setting size.')
-    edge_window.resizeTo(1200, 1200) # set size to 100x100
+    edge_window.resizeTo(1200, 1000) # set size to 100x100
     time.sleep(1)
 
     handle_edge_restore_notification(logger)
@@ -189,30 +191,56 @@ def get_to_profile_page(logger):
     logger.log("Made it to profile page.")
 
 
-def check_if_on_profile_page():
-    use_webpage_search('edit profile')
-    region=[640,350,25,25]
-    color=[255,150,50]
-    coords_list=find_all_pixels(region,color,tolerance=10)
-    if (coords_list is not None)and(coords_list != []):
-        return True
-    return False
-
 
 def get_to_following_page(logger):
     logger.log("Getting to this profile's following page")
     check_quit_key_press()
-    use_webpage_search("following")
+    
+    coord=(find_following_page(logger))
+    if coord is None: return "restart"
+    pyautogui.moveTo(coord[0],coord[1],duration=0.33)
+    time.sleep(1)
+    pyautogui.click()
 
-    region=[160,525,125,135]
-    color_orange=[255,150,50]
-    coords_list=find_all_pixels(region,color_orange,tolerance=5)
+def find_following_page(logger):
+    use_webpage_search('Following')
+    
+    color_orange=[253,151,60]
+    color_yellow=[255,255,58]
+    color_white=[255,255,255]
 
-    if (coords_list is None)or(coords_list == []):
-        return "restart"
-    else:
-        coord=coords_list[0]
-        click(coord[0],coord[1],clicks=1)
+    # show_image(screenshot([100,500,250,150]))
+
+    iar=numpy.asarray(screenshot())
+
+    for x_coord in range(100,350):
+        for y_coord in range(500,650):
+            coord=[x_coord,y_coord]
+            pixel=iar[y_coord][x_coord]
+            if pixel_is_equal(pixel,color_yellow,tol=30): return coord
+            if pixel_is_equal(pixel,color_orange,tol=30): return coord
+            
+            
+       
+
+def show_image(image):
+    plt.imshow(numpy.asarray(image))
+    plt.show()
+
+def check_if_on_profile_page():
+    use_webpage_search('edit profile')
+    iar=numpy.asarray(screenshot())
+    pix_list=[
+    iar[355][639],
+    iar[367][666],
+    iar[354][636],
+    ]
+    color_orange=[255,151,60]
+    for pix in pix_list:
+        if not(pixel_is_equal(pix,color_orange,tol=30)): return False
+    return True
+    
+    
 
 
 def check_if_on_twitter_main():
@@ -295,6 +323,7 @@ def use_webpage_search(search_string):
     #logger.log("Searching for 'following.' ")
     pyautogui.typewrite(search_string,interval=0.01)
     check_quit_key_press()
+    time.sleep(1)
 
 
 def search_region_for_pixel(region,color):
@@ -365,18 +394,34 @@ def find_all_pixels(region,color,tolerance=25):
 
 def get_to_followers_page(logger):
     logger.log("Getting to this profile's followers page")
-    check_quit_key_press()
-    use_webpage_search("Followers")
+    coord = find_followers_page()
+    
+    if coord is None: return "restart"
 
-    region=[154,421,311,200]
-    color=[255,150,50]
-    coords_list=find_all_pixels(region,color,tolerance=10)
+    pyautogui.moveTo(coord[0],coord[1],duration=0.33)
+    time.sleep(0.33)
+    pyautogui.click()
+    time.sleep(1)
 
-    if (coords_list is None)or(coords_list == []):
-        return "restart"
-    else:
-        coord=coords_list[0]
-        click(coord[0],coord[1],clicks=1)
+
+def find_followers_page():
+    use_webpage_search('Followers')
+    
+    color_orange=[253,151,60]
+    color_yellow=[255,255,58]
+    color_white=[255,255,255]
+
+    # show_image(screenshot([100,500,250,150]))
+
+    iar=numpy.asarray(screenshot())
+
+    for x_coord in range(100,350):
+        for y_coord in range(500,650):
+            coord=[x_coord,y_coord]
+            pixel=iar[y_coord][x_coord]
+            if pixel_is_equal(pixel,color_yellow,tol=30): return coord
+            if pixel_is_equal(pixel,color_orange,tol=30): return coord
+
 
 
 def combine_duplicate_coords(coords_list,tol=50):
@@ -457,10 +502,10 @@ def randomly_scroll_down(logger,scroll_limit=7):
 
         if random.randint(1,2)==1:
             fast_scroll_down()
-            time.sleep(0.33)
+            time.sleep(1)
         else:
             scroll_down()
-            time.sleep(0.33)
+            time.sleep(1)
 
 
         scrolls=scrolls-1
@@ -470,7 +515,7 @@ def get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_fo
     # get to profile page
     if get_to_profile_page(logger) == "restart":
         return "restart"
-    time.sleep(0.33)
+    time.sleep(1)
 
     # get to list of my followers
     if get_to_followers_page(logger) == "restart":
@@ -488,11 +533,13 @@ def get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_fo
     coord=[x_coord,y_coord]
     click(coord[0],coord[1])
     check_quit_key_press()
+    time.sleep(1)
 
 
     #get name of current guy
     name=get_name_of_current_profile()
     logger.log(f"This profile's name is [{name}]")
+    time.sleep(1)
 
     #check if name in file
     if users_ive_followed_from_database.check_if_user_in_users_followed_database(name):
@@ -500,6 +547,7 @@ def get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_fo
         logger.log("Skipping this profile and recalling this method.")
         get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_followed_from_database)
     logger.log("1. This name passed database check.")
+    time.sleep(1)
     
     #check if this name contains blacklist strings
     name_check=(check_for_blacklist_in_text(name))
@@ -509,6 +557,7 @@ def get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_fo
         users_ive_followed_from_database.add_username_to_database(name)
         get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_followed_from_database)
     logger.log("2. This name passed blacklist check.")
+    time.sleep(1)
     
     
     #check if this profile's bio contains blacklist strings
@@ -522,6 +571,7 @@ def get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_fo
         #call this method again
         get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_followed_from_database)
     logger.log("3. This bio passed blacklist check.")
+    time.sleep(1)
     
     #if the name isnt in the file, add this name to the file, then return.
     logger.log("Verified that the chosen account is satisfactory. Writing this username to the database.")
@@ -544,9 +594,6 @@ def get_to_random_account_from_followers_list(logger):
     check_quit_key_press()
     
     
-    
-    
-
 def get_this_profiles_bio_text():
     #close dm tab
     close_messages_tab()

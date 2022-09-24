@@ -12,7 +12,7 @@ from pytb.client import (block_this_profile, click_list_of_follow_buttons, find_
                          orientate_terminal, restart_twitter)
 from pytb.configuration import load_user_settings
 from pytb.database import Database
-from pytb.logger import Logger
+from pytb.logger import Logger                                                                                                            
 
 logger = Logger()
 users_ive_followed_from_database = Database("users_ive_followed_from")
@@ -212,7 +212,7 @@ def state_follow_mode():
         time.sleep(0.33)
 
         # get to their followers page
-        if get_to_followers_page(logger) != "coord_not_found":
+        if get_to_followers_page(logger) != "restart":
             # click that set of coords
             follow_button_list = find_follow_buttons()
             if click_list_of_follow_buttons(follow_button_list, logger) == "throttled":
@@ -259,9 +259,6 @@ def state_block_nba_accounts():
         "youngboy",
         "YoungBoy",
         "YOUNGBOY",
-        "nba",
-        "NBA",
-        "Nba",
         "I own u",
         "i own u",
         "I own you",
