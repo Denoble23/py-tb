@@ -882,9 +882,15 @@ def get_screen_resolution():
 def orientate_terminal():
     try:
         #get window
-        terminal_window = pygetwindow.getWindowsWithTitle("Twitter Bot")[0]
-        if len(terminal_window)==0:
-            terminal_window = pygetwindow.getWindowsWithTitle("py-tb v")[0]
+        name1_windows=pygetwindow.getWindowsWithTitle("Twitter Bot")
+        name2_windows=pygetwindow.getWindowsWithTitle("py-tb v")
+
+        if len(name1_windows) != 0: terminal_window = name1_windows[0]
+        if len(name2_windows) != 0: terminal_window = name2_windows[0]
+
+        
+        
+        
 
 
 
