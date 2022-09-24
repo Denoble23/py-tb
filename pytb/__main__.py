@@ -21,14 +21,12 @@ launcher_path = user_settings["launcher_path"]
 
 
 def main_gui():
-    out_text = \
-        """
--Python Twitter bot - Matthew Miglio ~June 2022\n\n
--1. Holding space terminates the program, and holding pause pauses the program.\n\n
--2. Specify the location of your microsoft edge in the config file @ \\AppData\\Roaming\\py-tb\\config.json\n
-    Make sure the path is specified in the same format as the default example!\n\n
--3. Select a mode:\n
-"""
+    out_text = """-Python Twitter bot - Matthew Miglio ~June 2022\n\n
+    -1. Holding space terminates the program, and holding pause pauses the program.\n\n
+    -2. Specify the location of your microsoft edge in the config file @ \\AppData\\Roaming\\py-tb\\config.json\n
+        Make sure the path is specified in the same format as the default example!\n\n
+    -3. Select a mode:\n
+    """
     sg.theme('Material2')
 
     layout = [
@@ -52,6 +50,7 @@ def main_gui():
             break
 
         if event == "Start":
+            orientate_terminal()
             if values["-Unfollow_IN-"]:
                 window.close()
                 unfollow_mode_main()
