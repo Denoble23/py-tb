@@ -884,27 +884,27 @@ def orientate_terminal():
         #get window
         name1_windows=pygetwindow.getWindowsWithTitle("Twitter Bot")
         name2_windows=pygetwindow.getWindowsWithTitle("py-tb v")
+        name3_windows=pygetwindow.getWindowsWithTitle("__main__.py - py-tb")
+        
 
         if len(name1_windows) != 0: terminal_window = name1_windows[0]
         if len(name2_windows) != 0: terminal_window = name2_windows[0]
+        if len(name3_windows) != 0: terminal_window = name3_windows[0]
+        
 
         
         
-        
-
-
-
         terminal_window.minimize()
         terminal_window.restore()
 
         #resize according to monitor width
         monitor_width=get_screen_resolution()[0]
         monitor_height=get_screen_resolution()[1]
-        terminal_width=monitor_width-1210
-        terminal_window.resizeTo(terminal_width, monitor_height)
+        terminal_width=monitor_width-1220
+        terminal_window.resizeTo(terminal_width, monitor_height-60)
 
         #move window
-        terminal_window.moveTo(1205, 5)
+        terminal_window.moveTo(1205, 30)
     except BaseException:
         print("Couldn't orientate terminal.")
 
