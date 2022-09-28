@@ -28,7 +28,7 @@ def main_gui():
     -3. Select a mode:\n
     """
     sg.theme('Material2')
-
+   
     layout = [
         [sg.Text(out_text)],
         [sg.Radio('Follow mode', "RADIO1", default=True, key="-Follow_IN-")],
@@ -291,10 +291,10 @@ def state_block_nba_accounts():
         
         #get this account's name
         name=get_name_of_current_profile()
+        name = name[0:10]
         log=f"This profile's name is [{name}]"
         logger.log(log)
 
-        
         #check if this name has any of the blacklists
         block_this_guy=False
         for string in nba_account_blacklist:

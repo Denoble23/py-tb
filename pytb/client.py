@@ -529,7 +529,7 @@ def get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_fo
     #click account
     logger.log("Clicking chosen random account.")
     x_coord=187
-    y_coord=random.randint(190,1142)
+    y_coord=random.randint(190,925)
     coord=[x_coord,y_coord]
     click(coord[0],coord[1])
     check_quit_key_press()
