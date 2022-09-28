@@ -12,7 +12,7 @@ from pytb.client import (block_this_profile, click_list_of_follow_buttons, find_
                          orientate_terminal, restart_twitter)
 from pytb.configuration import load_user_settings
 from pytb.database import Database
-from pytb.logger import Logger
+from pytb.logger import Logger                                                                                                            
 
 logger = Logger()
 users_ive_followed_from_database = Database("users_ive_followed_from")
@@ -21,16 +21,14 @@ launcher_path = user_settings["launcher_path"]
 
 
 def main_gui():
-    out_text = \
-        """
--Python Twitter bot - Matthew Miglio ~June 2022\n\n
--1. Holding space terminates the program, and holding pause pauses the program.\n\n
--2. Specify the location of your microsoft edge in the config file @ \\AppData\\Roaming\\py-tb\\config.json\n
-    Make sure the path is specified in the same format as the default example!\n\n
--3. Select a mode:\n
-"""
+    out_text = """-Python Twitter bot - Matthew Miglio ~June 2022\n\n
+    -1. Holding space terminates the program, and holding pause pauses the program.\n\n
+    -2. Specify the location of your microsoft edge in the config file @ \\AppData\\Roaming\\py-tb\\config.json\n
+        Make sure the path is specified in the same format as the default example!\n\n
+    -3. Select a mode:\n
+    """
     sg.theme('Material2')
-
+   
     layout = [
         [sg.Text(out_text)],
         [sg.Radio('Follow mode', "RADIO1", default=True, key="-Follow_IN-")],
@@ -52,6 +50,7 @@ def main_gui():
             break
 
         if event == "Start":
+            orientate_terminal()
             if values["-Unfollow_IN-"]:
                 window.close()
                 unfollow_mode_main()
@@ -212,7 +211,7 @@ def state_follow_mode():
         time.sleep(0.33)
 
         # get to their followers page
-        if get_to_followers_page(logger) != "coord_not_found":
+        if get_to_followers_page(logger) != "restart":
             # click that set of coords
             follow_button_list = find_follow_buttons()
             if click_list_of_follow_buttons(follow_button_list, logger) == "throttled":
@@ -259,9 +258,6 @@ def state_block_nba_accounts():
         "youngboy",
         "YoungBoy",
         "YOUNGBOY",
-        "nba",
-        "NBA",
-        "Nba",
         "I own u",
         "i own u",
         "I own you",
@@ -295,10 +291,10 @@ def state_block_nba_accounts():
         
         #get this account's name
         name=get_name_of_current_profile()
+        name = name[0:10]
         log=f"This profile's name is [{name}]"
         logger.log(log)
 
-        
         #check if this name has any of the blacklists
         block_this_guy=False
         for string in nba_account_blacklist:
