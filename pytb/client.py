@@ -421,19 +421,6 @@ def get_to_followers_page(logger):
     pyautogui.click()
     time.sleep(1)
     
-    if check_if_on_followers_page() is False: return "restart"
-
-
-def check_if_on_followers_page():
-    region=[230,177,100,20]
-
-    color_blue=[29,155,240]
-    pix_list=find_all_pixels(region,color_blue,tolerance=45)
-
-    if pix_list ==[]: return False
-    if pix_list is None: return False
-    if len(pix_list) == 0: return False
-    return True
 
 
 def find_followers_page():
