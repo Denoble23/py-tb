@@ -677,9 +677,6 @@ def check_for_blacklist_in_text(text):
     "DubNation"
     ,"DUBNATION"
     ,"dubnation"
-    ,"NBA"
-    ,"nba"
-    ,"Nba"
     ,"broke"
     ,"Broke"
     ,"youngboy" 
@@ -746,6 +743,26 @@ def check_for_blacklist_in_text(text):
     "ratio",
     "Ratio",
     "RATIO",
+    "IFB",
+    "ifb",
+    "Ifb",
+    "season ticket",
+    "Artist",
+    "artist",
+    "YouTuber",
+    "youtuber",
+    "Podcasts",
+    "God",
+    "god",
+    "GOD",
+    "NFL",
+    "NHL",
+    "GRAPHIC",
+    "graphic",
+    "Graphic",
+    "Graphics",
+    "GRAPHICS",
+    "graphics",
     
     ]
     
