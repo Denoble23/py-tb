@@ -123,9 +123,6 @@ def follow_mode_main():
         if state == "restart":
             state_restart()
             state = "follow_mode"
-        if state == "throttled":
-            state_throttled()
-            state = "follow_mode"
 
         state_loops = state_loops+1
         print(f"Total state loops?: {state_loops}")
@@ -142,15 +139,6 @@ def unfollow_mode_main():
         if state == "restart":
             state_restart()
             state = "unfollow_mode"
-
-
-def state_throttled():
-    logger.log("Bot is unable to follow more right now. Waiting 30 minutes.")
-    loops=1800
-    while loops>0:
-        loops=loops-1
-        time.sleep(1)
-        if (loops % 4 == 0): logger.log(f"Throttled. Waiting {loops} sec more.")
 
 
 def state_restart():
@@ -214,8 +202,8 @@ def state_follow_mode():
         if get_to_followers_page(logger) != "restart":
             # click that set of coords
             follow_button_list = find_follow_buttons()
-            if click_list_of_follow_buttons(follow_button_list, logger) == "throttled":
-                return "throttled"
+            click_list_of_follow_buttons(follow_button_list, logger)
+
             time.sleep(0.33)
 
         else:

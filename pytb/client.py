@@ -1,5 +1,6 @@
 import math
 import random
+from re import I
 import subprocess
 import sys
 import time
@@ -842,7 +843,11 @@ def click_list_of_follow_buttons(follow_button_list,logger):
             logger.remove_follow()
             index=index+1
 
-        return "throttled"
+        wait_time=0
+        for range in (500):
+            wait_time=wait_time+1
+            time.sleep(1)
+            logger.log(f"Throttled. Waiting {wait_time} seconds more.")
 
 
 def unfollow_from_following_page(logger):
