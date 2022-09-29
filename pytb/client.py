@@ -571,6 +571,8 @@ def get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_fo
         logger.log("We did not make it to an account. Passing to restart.")
         return "restart"
 
+    logger.add_account_examined()
+
     #get name of current guy
     name=get_name_of_current_profile()
     logger.log(f"This profile's name is [{name}]")
