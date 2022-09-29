@@ -14,7 +14,7 @@ from pytb.client import (
     check_for_blacklist_in_text, get_name_of_current_profile,
     get_this_profiles_bio_text, get_to_random_account_from_followers_list,
     get_to_random_account_from_followers_list_with_blacklist,
-    orientate_edge_window, screenshot)
+    orientate_edge_window, screenshot, show_image)
 from pytb.configuration import load_user_settings
 from pytb.database import Database
 from pytb.image_rec import (check_for_location, coords_is_equal,
@@ -36,8 +36,3 @@ show_image(screenshot(region=[0,0,1400,2000]))
     
 
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 76efaf64c346d0ac966cbbc5af6724ca3ab8698a
