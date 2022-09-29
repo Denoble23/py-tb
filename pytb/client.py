@@ -12,6 +12,7 @@ import pyperclip
 from matplotlib import pyplot as plt
 from screeninfo import get_monitors
 
+
 from pytb.image_rec import (check_for_location, coords_is_equal,
                             find_references, get_first_location,
                             pixel_is_equal)
@@ -352,6 +353,8 @@ def search_region_for_pixel(region,color):
 
 
 def find_all_pixels(region,color,tolerance=25):
+    #returns list of coords of all pixels in region that match color
+    
     #### LOGIC FOR MAKING FOR_ALL_PIXEL() METHOD VARIABLES
     x_limit=(region[0])+(region[2])
     y_limit=(region[1])+(region[3])
@@ -392,6 +395,21 @@ def find_all_pixels(region,color,tolerance=25):
     return coords_list
 
 
+def check_if_on_an_account():
+    use_webpage_search("Media")
+    time.sleep(1)
+    
+    region=[508,629,40,120]
+    pix_list=find_all_pixels(region,[255,150,50],tolerance=50) 
+    
+    if pix_list is None: return False
+    if pix_list == []: return False
+    if len(pix_list)==0: return False
+    return True
+    
+
+
+
 def get_to_followers_page(logger):
     logger.log("Getting to this profile's followers page")
     coord = find_followers_page()
@@ -402,6 +420,20 @@ def get_to_followers_page(logger):
     time.sleep(0.33)
     pyautogui.click()
     time.sleep(1)
+    
+    if check_if_on_followers_page() is False: return "restart"
+
+
+def check_if_on_followers_page():
+    region=[230,177,100,20]
+
+    color_blue=[29,155,240]
+    pix_list=find_all_pixels(region,color_blue,tolerance=45)
+
+    if pix_list ==[]: return False
+    if pix_list is None: return False
+    if len(pix_list) == 0: return False
+    return True
 
 
 def find_followers_page():
@@ -494,7 +526,7 @@ def fast_scroll_down():
     pyautogui.dragTo(1182,1155,duration=0.3)
 
 
-def randomly_scroll_down(logger,scroll_limit=7):
+def randomly_scroll_down(logger,scroll_limit=15):
     scrolls=random.randint(0,scroll_limit)
     while scrolls>0:
         check_quit_key_press()
@@ -502,12 +534,10 @@ def randomly_scroll_down(logger,scroll_limit=7):
 
         if random.randint(1,2)==1:
             fast_scroll_down()
-            time.sleep(1)
+            time.sleep(3)
         else:
             scroll_down()
             time.sleep(1)
-
-
         scrolls=scrolls-1
 
 
@@ -535,6 +565,11 @@ def get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_fo
     check_quit_key_press()
     time.sleep(1)
 
+
+    #check if we made it to an account
+    if check_if_on_an_account() == False:
+        logger.log("We did not make it to an account. Passing to restart.")
+        return "restart"
 
     #get name of current guy
     name=get_name_of_current_profile()
@@ -576,6 +611,8 @@ def get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_fo
     #if the name isnt in the file, add this name to the file, then return.
     logger.log("Verified that the chosen account is satisfactory. Writing this username to the database.")
     users_ive_followed_from_database.add_username_to_database(name)
+
+
 
 
 def get_to_random_account_from_followers_list(logger):
