@@ -451,8 +451,8 @@ def find_followers_page():
         for y_coord in range(500,650):
             coord=[x_coord,y_coord]
             pixel=iar[y_coord][x_coord]
-            if pixel_is_equal(pixel,color_yellow,tol=30): return coord
-            if pixel_is_equal(pixel,color_orange,tol=30): return coord
+            if pixel_is_equal(pixel,color_yellow,tol=10): return coord
+            if pixel_is_equal(pixel,color_orange,tol=10): return coord
 
 
 def combine_duplicate_coords(coords_list,tol=50):
@@ -525,7 +525,7 @@ def fast_scroll_down():
     pyautogui.dragTo(1182,1155,duration=0.3)
 
 
-def randomly_scroll_down(logger,scroll_limit=15):
+def randomly_scroll_down(logger,scroll_limit=7):
     scrolls=random.randint(0,scroll_limit)
     while scrolls>0:
         check_quit_key_press()
@@ -562,14 +562,18 @@ def get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_fo
     coord=[x_coord,y_coord]
     click(coord[0],coord[1])
     check_quit_key_press()
-    time.sleep(1)
+    time.sleep(3)
 
 
     #check if we made it to an account
     if check_if_on_an_account() == False:
         logger.log("We did not make it to an account. Passing to restart.")
         return "restart"
-
+    logger.log("Verified that we made it to an account.")
+    time.sleep(1)
+    
+    logger.log("Adding account to database of accounts examined.")
+    time.sleep(1)
     logger.add_account_examined()
 
     #get name of current guy
@@ -580,7 +584,9 @@ def get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_fo
     #check if name in file
     if users_ive_followed_from_database.check_if_user_in_users_followed_database(name):
         logger.log("This account has been targetted before. Redoing search algorithm.")
+        time.sleep(1)
         logger.log("Skipping this profile and recalling this method.")
+        time.sleep(1)
         get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_followed_from_database)
     logger.log("1. This name passed database check.")
     time.sleep(1)
@@ -589,7 +595,9 @@ def get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_fo
     name_check=(check_for_blacklist_in_text(name))
     if name_check != "pass":
         logger.log(f"The name [{name}] failed blacklist check with string [{name_check}]")
+        time.sleep(1)
         logger.log("Skipping this profile and recalling this method.")
+        time.sleep(1)
         users_ive_followed_from_database.add_username_to_database(name)
         get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_followed_from_database)
     logger.log("2. This name passed blacklist check.")
@@ -600,8 +608,11 @@ def get_to_random_account_from_followers_list_with_blacklist(logger,users_ive_fo
     bio_text=get_this_profiles_bio_text()
     bio_check=check_for_blacklist_in_text(bio_text)
     if bio_check != "pass":
+        time.sleep(1)
         logger.log(f"This bio failed the blacklist check with string [{bio_check}]")
+        time.sleep(1)
         logger.log("Skipping this profile and recalling this method.")
+        time.sleep(1)
         #write this name to db so we dont have to check again
         users_ive_followed_from_database.add_username_to_database(name)
         #call this method again

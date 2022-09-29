@@ -11,7 +11,7 @@ import pyperclip
 from matplotlib import pyplot as plt
 
 from pytb.client import (
-    check_for_blacklist_in_text, check_if_on_followers_page, find_all_pixels, get_name_of_current_profile,
+    check_for_blacklist_in_text, check_if_on_an_account, check_if_on_followers_page, find_all_pixels, get_name_of_current_profile,
     get_this_profiles_bio_text, get_to_random_account_from_followers_list,
     get_to_random_account_from_followers_list_with_blacklist,
     orientate_edge_window, screenshot, show_image, use_webpage_search)
@@ -35,10 +35,6 @@ launcher_path = user_settings["launcher_path"]
 # print(find_follow_buttons())
 
 
-bio_text=get_this_profiles_bio_text()
-print(bio_text)
 
 
-
-
-print(check_if_on_followers_page())
+print(check_if_on_an_account())
