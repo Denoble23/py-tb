@@ -33,7 +33,10 @@ launcher_path = user_settings["launcher_path"]
 
       
 # print(find_follow_buttons())
-    
+
+
+bio_text=get_this_profiles_bio_text()
+print(bio_text)
 
 
 

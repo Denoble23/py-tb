@@ -455,7 +455,6 @@ def find_followers_page():
             if pixel_is_equal(pixel,color_orange,tol=30): return coord
 
 
-
 def combine_duplicate_coords(coords_list,tol=50):
     #method will take an array of coords ([x,y]) and combine duplicates according to a certain tolerance.
 
