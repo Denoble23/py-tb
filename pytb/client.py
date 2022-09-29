@@ -438,8 +438,8 @@ def find_followers_page():
         for y_coord in range(500,650):
             coord=[x_coord,y_coord]
             pixel=iar[y_coord][x_coord]
-            if pixel_is_equal(pixel,color_yellow,tol=10): return coord
-            if pixel_is_equal(pixel,color_orange,tol=10): return coord
+            if pixel_is_equal(pixel,color_yellow,tol=50): return coord
+            if pixel_is_equal(pixel,color_orange,tol=50): return coord
 
 
 def combine_duplicate_coords(coords_list,tol=50):
